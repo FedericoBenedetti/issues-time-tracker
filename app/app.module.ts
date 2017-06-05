@@ -3,17 +3,19 @@ import { BrowserModule } from "@angular/platform-browser";
 import { HttpModule } from "@angular/http";
 
 import { AppComponent }   from "./app.component";
+import { MapperComponent } from "./mapper.component";
 
 import { HttpService } from "./http.service";
 
 @NgModule({
   imports:      [
       BrowserModule,
-      HttpModule
+      HttpModule,
     ],
 
   declarations: [
-      AppComponent
+      AppComponent,
+      MapperComponent
     ],
 
   bootstrap:    [

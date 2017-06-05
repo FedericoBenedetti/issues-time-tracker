@@ -24,7 +24,6 @@ export class AppComponent implements OnInit {
         this._restService.retrieveIssues()
         .subscribe((projectArray:Project[]) => {
             this.projectArray = projectArray;
-            console.log("aleeeh", this.projectArray);
         });
     }
 

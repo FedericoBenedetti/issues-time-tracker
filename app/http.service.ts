@@ -3,6 +3,7 @@ import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { Observable } from "rxjs/Rx";
 
 import { Project } from "./project";
+import { MapperComponent } from "./mapper.component";
 
 import "rxjs/Rx";
 
@@ -14,7 +15,16 @@ export class HttpService {
 
     retrieveIssues(): Observable<Project[]> {
        return this.http.get(this.projectBaseUrl)
-			.map((res:Response) => res.json())
-            .catch((error:any) => Observable.throw(error.json().error || "Server error"));
+			.map((res:Response) => {
+                let ProjectDTOs: IProjectDTO[] = res.json();
+                return MapperComponent.pjDTOtoPj(ProjectDTOs);
+            });
     }
+}
+
+
+export interface IProjectDTO {
+    id: number;
+    name: string;
+    default_branch: string;
 }
