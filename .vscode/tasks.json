@@ -2,9 +2,31 @@
     // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "0.1.0",
-    "command": "tsc",
     "isShellCommand": true,
-    "args": ["-p" , "."],
     "showOutput": "silent",
-    "problemMatcher": "$tsc"
+    "args": [],
+
+    "tasks": [
+        {
+        "taskName": "run-time.compilation",
+        "suppressTaskName": true,
+        "isBuildCommand": true,
+        "command": "tsc",
+        "isShellCommand": true,
+        "args": ["-p" , "."],
+        "showOutput": "silent",
+        "problemMatcher": "$tsc"
+        },
+        {
+            "taskName": "chrome",
+            "suppressTaskName": true,
+            "command": "chrome",
+            "windows": {
+                "command": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+            },
+            "args": ["${file}"]
+
+        }
+    ]
+
 }
