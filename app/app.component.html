@@ -10,8 +10,8 @@
         <th></th>
         <th> Opened </th>
         <th> Closed </th>
-        <th> Time Estimated </th>
-        <th> Time Spent </th>
+        <th> Time Estimated (s) </th>
+        <th> Time Spent (s) </th>
     </tr>
     <tr *ngFor="let project of projectArray">
         <td>
@@ -24,10 +24,10 @@
             {{ project.nClosed }}
         </td>
         <td>
-            {{ totalTimeEstimated }}
+            {{ project.totalTimeEstimated }}
         </td>
         <td>
-            {{ totalTimeSpent }}
+            {{ project.totalTimeSpent }}
         </td>
     </tr>
 </table>

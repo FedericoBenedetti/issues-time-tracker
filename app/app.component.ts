@@ -5,6 +5,7 @@ import { HttpService } from "./http.service";
 
 import { Project } from "./project";
 import { Issue } from "./issue";
+import { Data } from "./data";
 
 @Component({
     selector: "my-app",
@@ -19,8 +20,6 @@ import { Issue } from "./issue";
 export class AppComponent implements OnInit {
 
     public projectArray: Project[] = [];
-    public totalTimeEstimated = 0;
-    public totalTimeSpent = 0;
 
     constructor(
         private restService: HttpService) { }
@@ -43,9 +42,10 @@ export class AppComponent implements OnInit {
 
     calcData(project: Project): void {
         project.pjIssues.forEach(issue => {
-            this.totalTimeEstimated += issue.time_estimate;
-            this.totalTimeSpent += issue.total_time_spent;
-            console.log(issue.time_estimate);
+           project.arrayTimeEstimated.push(issue.time_estimate);
+           project.arrayTimeSpent.push(issue.total_time_spent);
+           project.totalTimeEstimated += issue.time_estimate;
+           project.totalTimeSpent += issue.total_time_spent;
         });
         console.log("I am inside 'numberOfIssue'");
             project.pjIssues.forEach(issue => {
