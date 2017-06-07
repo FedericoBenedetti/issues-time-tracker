@@ -1,9 +1,24 @@
 <h1> electron/angular2 issues tracking app </h1>
 
-<div *ngFor="let project of projectArray">
-    <button id="btn-project" (click)="selectProject(project.id)">{{ project.name }}</button>
-</div>
-
-<div *ngFor="let issue of issueArray">
-    {{ issue.state }}
-</div>
+<table>
+    <tr>
+        <th> Project ID </th>
+        <th colspan="2"> Issues </th>
+    </tr>
+    <tr>
+        <th></th>
+        <th> Opened </th>
+        <th> Closed </th>
+    </tr>
+    <tr *ngFor="let project of projectArray">
+        <td>
+            {{ project.name }}
+        </td>
+        <td>
+            {{ project.nActive }}
+        </td>
+        <td>
+            {{ project.nClosed }}
+        </td>
+    </tr>
+</table>

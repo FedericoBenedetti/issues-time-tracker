@@ -11,27 +11,27 @@ import "rxjs/Rx";
 
 @Injectable()
 export class HttpService {
-    projectBaseUrl = "https://git.loccioni.com/api/v4/projects?per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y";
+    projectBaseUrl = "https://git.loccioni.com/api/v4/";
 
-    constructor (private http: Http) { }
+    constructor(private http: Http) { }
 
     retrieveProjects(): Observable<Project[]> {
-       return this.http.get(this.projectBaseUrl)
-			.map((res:Response) => {
+        let projectUrl: string = this.projectBaseUrl + "projects?per_page=1000&private_token=ij7kczXd7fGz2dyJxT5Y";
+        return this.http.get(projectUrl)
+            .map((res: Response) => {
                 let ProjectDTOs: IProjectDTO[] = res.json();
                 return MapperComponent.pjDTOtoPj(ProjectDTOs);
             });
     }
 
-    retrieveIssues(prj: number): Observable<Issue[]> {
-        let projectIssueUrl: string = "https://git.loccioni.com/api/v4/projects/" + prj +
-                "/issues?per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y";
-        console.log(projectIssueUrl);
+    retrieveIssues(id: number): Observable<Issue[]> {
+        let projectIssueUrl: string = this.projectBaseUrl + "projects/" +
+             id + "/issues?per_page=10000&private_token=ij7kczXd7fGz2dyJxT5Y";
         return this.http.get(projectIssueUrl)
-			.map((res:Response) => {
+            .map((res: Response) => {
                 let IssueDTOs: IIssueDTO[] = res.json();
                 return MapperComponent.isDTOtoIs(IssueDTOs);
-            });
+         });
     }
 }
 

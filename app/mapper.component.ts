@@ -32,7 +32,7 @@ export class MapperComponent {
         let i: number = 0;
 
          IssueDTOs.forEach(item => {
-            issueArray[i] = new Project();
+            issueArray[i] = new Issue();
             issueArray[i].state = item.state;
             i ++;
         });
