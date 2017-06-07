@@ -19,14 +19,13 @@ import { Issue } from "./issue";
 export class AppComponent implements OnInit {
 
     public projectArray: Project[] = [];
+    public totalTimeEstimated = 0;
+    public totalTimeSpent = 0;
 
     constructor(
         private restService: HttpService) { }
 
     ngOnInit(): void {
-
-
-
         this.restService.retrieveProjects()
             .subscribe((projectArray: Project[]) => {
                 this.projectArray = projectArray;
@@ -35,14 +34,19 @@ export class AppComponent implements OnInit {
                     this.restService.retrieveIssues(item.id)
                         .subscribe(((issues: Issue[]) => {
                             item.pjIssues = issues;
-                            this.numberOfIssues(item);
+                            this.calcData(item);
                         }));
                 });
                 console.log("Fetch of Issues DONE");
             });
     }
 
-    numberOfIssues(project: Project): void {
+    calcData(project: Project): void {
+        project.pjIssues.forEach(issue => {
+            this.totalTimeEstimated += issue.time_estimate;
+            this.totalTimeSpent += issue.total_time_spent;
+            console.log(issue.time_estimate);
+        });
         console.log("I am inside 'numberOfIssue'");
             project.pjIssues.forEach(issue => {
                 if (issue.state === "opened") {

@@ -3,12 +3,9 @@ import { Component, OnInit } from "@angular/core";
 import { Project } from "./project";
 import { Issue } from "./issue";
 
-@Component({
-  selector: "mapper-component",
-  templateUrl: "./app/mapper.component.html"
-})
+import * as DTO from "./dtos.interface";
 
-export class MapperComponent {
+export class Mapper {
 
 
 
@@ -27,17 +24,26 @@ export class MapperComponent {
         return ProjectArray;
     }
 
-    static isDTOtoIs(IssueDTOs: any): Issue[] {
+    static isDTOtoIs(IssueDTOs: DTO.IIssueDTO[]): Issue[] {
         let issueArray: Issue[] = [];
         let i: number = 0;
 
          IssueDTOs.forEach(item => {
             issueArray[i] = new Issue();
             issueArray[i].state = item.state;
+            issueArray[i].iid = item.iid;
             i ++;
         });
 
         return issueArray;
 
+    }
+
+    static addTimeTracking(issue: Issue, ITimeTrackingDTO: DTO.ITimeTrackingDTO): void {
+
+        issue.time_estimate = ITimeTrackingDTO.time_estimate;
+        issue.total_time_spent = ITimeTrackingDTO.total_time_spent;
+
+        return;
     }
 }

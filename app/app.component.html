@@ -4,11 +4,14 @@
     <tr>
         <th> Project ID </th>
         <th colspan="2"> Issues </th>
+        <th colspan="2"> Time Tracking </th>
     </tr>
     <tr>
         <th></th>
         <th> Opened </th>
         <th> Closed </th>
+        <th> Time Estimated </th>
+        <th> Time Spent </th>
     </tr>
     <tr *ngFor="let project of projectArray">
         <td>
@@ -19,6 +22,12 @@
         </td>
         <td>
             {{ project.nClosed }}
+        </td>
+        <td>
+            {{ totalTimeEstimated }}
+        </td>
+        <td>
+            {{ totalTimeSpent }}
         </td>
     </tr>
 </table>
