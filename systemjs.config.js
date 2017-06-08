@@ -24,6 +24,18 @@
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
       '@angular/upgrade': 'npm:@angular/upgrade/bundles/upgrade.umd.js',
       '@angular/upgrade/static': 'npm:@angular/upgrade/bundles/upgrade-static.umd.js',
+      "@progress/kendo-angular-upload": "npm:@progress/kendo-angular-upload/dist/cdn/js/kendo-angular-upload.js",
+      "@progress/kendo-data-query": "npm:@progress/kendo-data-query/dist/cdn/js/kendo-data-query.js",
+      "@progress/kendo-file-saver": "npm:@progress/kendo-file-saver/dist/cdn/js/kendo-file-saver.js",
+      "@progress/kendo-angular-intl": "npm:@progress/kendo-angular-intl/dist/cdn/js/kendo-angular-intl.js",
+      "@progress/kendo-angular-l10n": "npm:@progress/kendo-angular-l10n/dist/cdn/js/kendo-angular-l10n.js",
+      "@progress/kendo-angular-inputs": "npm:@progress/kendo-angular-inputs/dist/cdn/js/kendo-angular-inputs.js",
+      "@progress/kendo-angular-dropdowns": "npm:@progress/kendo-angular-dropdowns/dist/cdn/js/kendo-angular-dropdowns.js",
+      "@progress/kendo-angular-grid": "npm:@progress/kendo-angular-grid/dist/cdn/js/kendo-angular-grid.js",
+      "@progress/kendo-angular-resize-sensor": "npm:@progress/kendo-angular-resize-sensor/dist/cdn/js/kendo-angular-resize-sensor.js",
+      "@progress/kendo-angular-charts": "npm:@progress/kendo-angular-charts/dist/cdn/js/kendo-angular-charts.js",
+      "@progress/kendo-drawing": "npm:@progress/kendo-drawing/dist/cdn/js/kendo-drawing.js",
+
       // other libraries
       'rxjs':                      'npm:rxjs',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js'

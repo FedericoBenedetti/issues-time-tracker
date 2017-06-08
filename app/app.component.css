@@ -1,1 +1,8 @@
+* {
+    font-family: 'Roboto', sans-serif;
+}
 
+#grid-detail {
+    display: inline-block;
+    margin-left: 5em;
+}

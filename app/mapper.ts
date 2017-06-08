@@ -16,7 +16,6 @@ export class Mapper {
         ProjectDTOs.forEach(item => {
             ProjectArray[i] = new Project();
             ProjectArray[i].name = item.name;
-            ProjectArray[i].default_branch = item.default_branch;
             ProjectArray[i].id = item.id;
             i ++;
         });
@@ -32,6 +31,7 @@ export class Mapper {
             issueArray[i] = new Issue();
             issueArray[i].state = item.state;
             issueArray[i].iid = item.iid;
+            issueArray[i].title = item.title;
             i ++;
         });
 
@@ -43,7 +43,6 @@ export class Mapper {
 
         issue.time_estimate = ITimeTrackingDTO.time_estimate;
         issue.total_time_spent = ITimeTrackingDTO.total_time_spent;
-
         return;
     }
 }

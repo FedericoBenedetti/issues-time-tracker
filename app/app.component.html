@@ -1,33 +1,38 @@
 <h1> electron/angular2 issues tracking app </h1>
 
-<table>
-    <tr>
-        <th> Project ID </th>
-        <th colspan="2"> Issues </th>
-        <th colspan="2"> Time Tracking </th>
-    </tr>
-    <tr>
-        <th></th>
-        <th> Opened </th>
-        <th> Closed </th>
-        <th> Time Estimated (s) </th>
-        <th> Time Spent (s) </th>
-    </tr>
-    <tr *ngFor="let project of projectArray">
-        <td>
-            {{ project.name }}
-        </td>
-        <td>
-            {{ project.nActive }}
-        </td>
-        <td>
-            {{ project.nClosed }}
-        </td>
-        <td>
-            {{ project.totalTimeEstimated }}
-        </td>
-        <td>
-            {{ project.totalTimeSpent }}
-        </td>
-    </tr>
-</table>
+<button id="refresh-ui" (click)="refresh()"> Refresh </button>
+
+<kendo-grid [data]="projectArray">
+    <kendo-grid-column field="id" title="Project ID">
+    </kendo-grid-column>
+    <kendo-grid-column field="name" title="Project Name">
+    </kendo-grid-column>
+    <kendo-grid-column field="nActive" title="Opened Issue">
+    </kendo-grid-column>
+    <kendo-grid-column field="nClosed" title="Closed Issue">
+    </kendo-grid-column>
+    <kendo-grid-column field="timeOut" title="Issue out of time">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            {{dataItem.timeOut}}
+        </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="timeEstimated" title="Time Estimated">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            {{dataItem.timeEstimated.h}} h
+        </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column field="timeSpent" title="Time Spent">
+        <ng-template kendoGridCellTemplate let-dataItem>
+            {{dataItem.timeSpent.h}} h
+        </ng-template>
+    </kendo-grid-column>
+    <ng-template kendoGridDetailTemplate let-dataItem [kendoGridDetailTemplateShowIf]="checkLength">
+        <div *ngFor="let item of dataItem.timeOutIssue">
+            <p id="grid-detail" style="margin-left: 1em"><strong>Name:</strong> {{item.title}}</p>
+            <p id="grid-detail"><strong>State:</strong> {{item.state}}</p>
+            <p id="grid-detail"><strong>IID:</strong> {{item.iid}}</p>
+            <p id="grid-detail"><strong>Time Estimated:</strong> {{item.time_estimate}}</p> s
+            <p id="grid-detail"><strong>Time Spent:</strong> {{item.total_time_spent}}</p> s
+        </div>
+    </ng-template>
+</kendo-grid>
