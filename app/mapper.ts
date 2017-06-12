@@ -2,12 +2,23 @@ import { Component, OnInit } from "@angular/core";
 
 import { Project } from "./project";
 import { Issue } from "./issue";
+import { Group } from "./group";
 
 import * as DTO from "./dtos.interface";
 
 export class Mapper {
 
+    static grpDROtoGrp(groupDTOs: any): Group[] {
+        let GroupArray: Group[] = [];
+        let i: number = 0;
+        groupDTOs.forEach(item => {
+            GroupArray[i] = new Group();
+            GroupArray[i].name = item.name;
+            i ++;
+        });
 
+        return GroupArray;
+    }
 
     static pjDTOtoPj(ProjectDTOs: any): Project[] {
         let ProjectArray: Project[] = [];

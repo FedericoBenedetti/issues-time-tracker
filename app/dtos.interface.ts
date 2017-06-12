@@ -3,6 +3,10 @@ export interface IProjectDTO {
     name: string;
 }
 
+export interface IGroupDTO {
+    name: string;
+}
+
 export interface IIssueDTO {
     state: string;
     iid: number;

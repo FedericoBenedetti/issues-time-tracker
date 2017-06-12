@@ -17,6 +17,7 @@
     "@angular/router": "^4.1.3",
     "@progress/kendo-angular-charts": "*",
     "@progress/kendo-angular-dateinputs": "^1.0.3",
+    "@progress/kendo-angular-dialog": "^1.0.1",
     "@progress/kendo-angular-dropdowns": "^1.0.10",
     "@progress/kendo-angular-excel-export": "^1.0.1",
     "@progress/kendo-angular-grid": "^1.1.3",
