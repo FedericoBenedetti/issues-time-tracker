@@ -21,8 +21,17 @@ import { Group } from "./group";
 
 export class AppComponent implements OnInit {
 
-    // Dialog Box
+    // DialogBox
     private isError: boolean = false;
+    private errNumber: number = 0;
+
+    public close() {
+        this.isError = false;
+    }
+    // End DialogBox
+
+    // Kendo GridView
+    private gridView: GridDataResult;
 
     // Kendo Paging
     private pageSize: number = 10;
@@ -43,7 +52,6 @@ export class AppComponent implements OnInit {
 
     // Kendo Sorting
     private sort: SortDescriptor[] = [];
-    private gridView: GridDataResult;
 
     protected sortChange(sort: SortDescriptor[]): void {
         this.sort = sort;
@@ -55,6 +63,7 @@ export class AppComponent implements OnInit {
             data: orderBy(this.projectArray, this.sort),
             total: this.projectArray.length
         };
+        this.loadItems();
     }
     // End of Kendo Sorting
 
@@ -71,8 +80,6 @@ export class AppComponent implements OnInit {
         private restService: HttpService) { }
 
     ngOnInit(): void {
-        this.loadItems();
-        this.loadProducts();
         this.getGroups();
     }
 
@@ -105,7 +112,6 @@ export class AppComponent implements OnInit {
                 this.projectArray = projectArray;
                 console.log("Fetch of Projects DONE");
                 console.log("Projects Dimension: ", this.projectArray.length);
-                this.loadItems();
                 this.loadProducts();
                 projectArray.forEach(item => {
                     this.restService.retrieveIssues(item.id)
@@ -116,12 +122,17 @@ export class AppComponent implements OnInit {
                         }),
                         Error => {
                             console.log("Error (Issues) ", Error);
+                            this.errNumber = Error.status;
+                            this.isError = true;
                         })
+
                 });
                 console.log("Fetch of Issues DONE");
             },
             Error => {
                 console.log("Error (Projects) ", Error);
+                this.errNumber = Error.status;
+                this.isError = true;
             });
     }
 
@@ -148,7 +159,7 @@ export class AppComponent implements OnInit {
     // of the Time Estimated range
     checkIssueOutOfTime(project: Project): void {
         project.pjIssues.forEach(issue => {
-           if (issue.time_estimate < ((issue.total_time_spent * 0.9) - 3600)) {
+            if (issue.time_estimate < ((issue.total_time_spent * 0.9) - 3600)) {
                 project.timeOut += 1;
                 project.timeOutIssue.push(issue);
             }

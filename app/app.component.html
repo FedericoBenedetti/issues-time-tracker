@@ -1,28 +1,22 @@
 <h1> electron/angular2 issues tracking app </h1>
 
-<div *ngIf="isError == true">
-    <kendo-dialog title="Error" *ngIf="opened" (close)="close('close')">
-            <p style="margin: 30px; text-align: center;">Error ({{errNumber}})</p>
-            <kendo-dialog-actions>
-                <button kendoButton (click)="close('close')">Close</button>
-            </kendo-dialog-actions>
-        </kendo-dialog>
-</div>
+<kendo-dialog title="Error" *ngIf="isError" (close)="close()">
+    <p style="margin: 30px; text-align: center;">Error ({{errNumber}})</p>
+    <kendo-dialog-actions>
+        <button kendoButton (click)="close()">Close</button>
+    </kendo-dialog-actions>
+</kendo-dialog>
 
-<div class="example-wrapper">
+<div>
     <p>Groups:</p>
     <kendo-combobox [data]="comboBoxGroup"
-                    (valueChange)="valueChange($event)"
-                    >
+                    (valueChange)="valueChange($event)">
     </kendo-combobox>
 </div>
 
-<button id="refresh-ui" (click)="refresh()"> Search </button>
-
 <kendo-grid [data]="gridView"
             [sortable]="{ mode: 'multiple' }"
-            [sort]="sort"
-            (sortChange)="sortChange($event)"
+            [sort]="sort" (sortChange)="sortChange($event)"
             [pageSize]="pageSize"
             [skip]="skip"
             [pageable]="true"

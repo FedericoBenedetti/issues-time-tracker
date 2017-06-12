@@ -59,7 +59,7 @@ export class HttpService {
         let urlForPages: string = this.projectBaseUrl;
         let urlForFetch: string = this.projectBaseUrl;
         if (group) {
-            urlForPages += "groups/" + group +"/";
+            urlForPages += "groups/" + group + "/";
             urlForFetch += "groups/" + group + "/";
         }
         return this.http

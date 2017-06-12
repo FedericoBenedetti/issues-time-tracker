@@ -14,7 +14,7 @@ export class Mapper {
         groupDTOs.forEach(item => {
             GroupArray[i] = new Group();
             GroupArray[i].name = item.name;
-            i ++;
+            i++;
         });
 
         return GroupArray;
@@ -28,7 +28,7 @@ export class Mapper {
             ProjectArray[i] = new Project();
             ProjectArray[i].name = item.name;
             ProjectArray[i].id = item.id;
-            i ++;
+            i++;
         });
 
         return ProjectArray;
@@ -38,12 +38,12 @@ export class Mapper {
         let issueArray: Issue[] = [];
         let i: number = 0;
 
-         IssueDTOs.forEach(item => {
+        IssueDTOs.forEach(item => {
             issueArray[i] = new Issue();
             issueArray[i].state = item.state;
             issueArray[i].iid = item.iid;
             issueArray[i].title = item.title;
-            i ++;
+            i++;
         });
 
         return issueArray;
