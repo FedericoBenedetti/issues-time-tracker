@@ -5,6 +5,8 @@ import { HttpService } from "./http.service";
 import { SortDescriptor, orderBy } from "@progress/kendo-data-query";
 import { GridDataResult, PageChangeEvent } from "@progress/kendo-angular-grid";
 
+import * as Rx from "rxjs/Rx";
+
 import { Project } from "./project";
 import { Issue } from "./issue";
 import { Group } from "./group";
@@ -70,6 +72,9 @@ export class AppComponent implements OnInit {
     // Array of Projects, empty now
     public projectArray: Project[] = [];
 
+    // Busy
+    busy: Rx.Subscription;
+
     // Initializing both the array of Group, and the Array of string
     // containing the name of each group. Needed by kendo-combobox
     public projectGroups: Group[] = [];
@@ -86,7 +91,7 @@ export class AppComponent implements OnInit {
     // Retrieving all groups, putting them in an array
     // of strings.
     getGroups(): void {
-        this.restService.retrieveGroups()
+        this.busy = this.restService.retrieveGroups()
             .subscribe((groupArray: Group[]) => {
                 this.projectGroups = groupArray;
                 console.log("Fetch of Groups DONE");
@@ -107,14 +112,14 @@ export class AppComponent implements OnInit {
 
     // Function to fetch both Projects and Issues
     public fetchAndFill(group?: string): void {
-        this.restService.retrieveProjects(group)
+        this.busy = this.restService.retrieveProjects(group)
             .subscribe((projectArray: Project[]) => {
                 this.projectArray = projectArray;
                 console.log("Fetch of Projects DONE");
                 console.log("Projects Dimension: ", this.projectArray.length);
                 this.loadProducts();
                 projectArray.forEach(item => {
-                    this.restService.retrieveIssues(item.id)
+                    this.busy = this.restService.retrieveIssues(item.id)
                         .subscribe(((issues: Issue[]) => {
                             item.pjIssues = issues;
                             this.checkIssueOutOfTime(item);

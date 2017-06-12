@@ -1,5 +1,7 @@
 <h1> electron/angular2 issues tracking app </h1>
 
+<div id="busy" [ngBusy]="{busy: busy, message: 'Fetching data, please wait...', backdrop: true, delay: 200, minDuration: 600}"></div>
+
 <kendo-dialog title="Error" *ngIf="isError" (close)="close()">
     <p style="margin: 30px; text-align: center;">Error ({{errNumber}})</p>
     <kendo-dialog-actions>

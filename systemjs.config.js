@@ -40,7 +40,7 @@
             '@angular/animations': 'npm:@angular/animations/bundles/animations.umd.js',
             '@angular/animations/browser': 'npm:@angular/animations/bundles/animations-browser.umd.js',
             '@angular/platform-browser/animations': 'npm:@angular/platform-browser/bundles/platform-browser-animations.umd.js',
-
+            'angular2-busy': 'npm:angular2-busy',
             // other libraries
             'rxjs': 'npm:rxjs',
             'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js'
@@ -53,6 +53,10 @@
             },
             rxjs: {
                 defaultExtension: 'js'
+            },
+            'angular2-busy': {
+            main: './index.js',
+            defaultExtension: 'js'
             }
         }
     });

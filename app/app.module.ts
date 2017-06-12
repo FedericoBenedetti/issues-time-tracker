@@ -8,6 +8,8 @@ import { GridModule } from "@progress/kendo-angular-grid";
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 
+import { BusyModule } from 'angular2-busy';
+
 import { AppComponent } from "./app.component";
 import { Mapper } from "./mapper";
 
@@ -23,7 +25,8 @@ import { HttpService } from "./http.service";
         ButtonsModule,
         DialogModule,
         DropDownsModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        BusyModule
     ],
 
     declarations: [
