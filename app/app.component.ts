@@ -20,6 +20,9 @@ import { Issue } from "./issue";
 export class AppComponent implements OnInit {
     public projectArray: Project[] = [];
 
+    private sort: SortDescriptor[] = [];
+    private gridView: GridDataResult;
+
     constructor(
         private restService: HttpService) { }
 
@@ -57,8 +60,8 @@ export class AppComponent implements OnInit {
             .subscribe((projectArray: Project[]) => {
                 this.projectArray = projectArray;
                 console.log("Fetch of Projects DONE");
-                // this.projectArray.splice(0, 8);
-                // this.projectArray.splice(1);
+                console.log("Projects Dimension: ", this.projectArray.length);
+                this.loadProducts();
                 projectArray.forEach(item => {
                     this.restService.retrieveIssues(item.id)
                         .subscribe(((issues: Issue[]) => {
@@ -80,5 +83,16 @@ export class AppComponent implements OnInit {
         return dataItem.timeOutIssue.length > 0;
     }
 
+    protected sortChange(sort: SortDescriptor[]): void {
+        this.sort = sort;
+        this.loadProducts();
+    }
+
+    private loadProducts(): void {
+        this.gridView = {
+            data: orderBy(this.projectArray, this.sort),
+            total: this.projectArray.length
+        };
+    }
 
 }

@@ -2,7 +2,11 @@
 
 <button id="refresh-ui" (click)="refresh()"> Refresh </button>
 
-<kendo-grid [data]="projectArray">
+<kendo-grid [data]="gridView"
+            [sortable]="{ mode: 'multiple' }"
+            [sort]="sort"
+            (sortChange)="sortChange($event)">
+
     <kendo-grid-column field="id" title="Project ID">
     </kendo-grid-column>
     <kendo-grid-column field="name" title="Project Name">
@@ -28,11 +32,25 @@
     </kendo-grid-column>
     <ng-template kendoGridDetailTemplate let-dataItem [kendoGridDetailTemplateShowIf]="checkLength">
         <div *ngFor="let item of dataItem.timeOutIssue">
-            <p id="grid-detail" style="margin-left: 1em"><strong>Name:</strong> {{item.title}}</p>
-            <p id="grid-detail"><strong>State:</strong> {{item.state}}</p>
-            <p id="grid-detail"><strong>IID:</strong> {{item.iid}}</p>
-            <p id="grid-detail"><strong>Time Estimated:</strong> {{item.time_estimate}}</p> s
-            <p id="grid-detail"><strong>Time Spent:</strong> {{item.total_time_spent}}</p> s
+            <table>
+                <tr>
+                    <td>
+                        <p id="grid-detail" style="margin-left: 1em"><strong>Name:</strong> {{item.title}}</p>
+                    </td>
+                    <td>
+                        <p id="grid-detail"><strong>State:</strong> {{item.state}}</p>
+                    </td>
+                    <td>
+                        <p id="grid-detail"><strong>IID:</strong> {{item.iid}}</p>
+                    </td>
+                    <td>
+                        <p id="grid-detail"><strong>Time Estimated:</strong> {{item.time_estimate}}</p> s
+                    </td>
+                    <td>
+                        <p id="grid-detail"><strong>Time Spent:</strong> {{item.total_time_spent}}</p> s
+                    </td>
+                </tr>
+            </table>
         </div>
     </ng-template>
 </kendo-grid>

@@ -1,5 +1,6 @@
 import { Issue } from "./issue";
 import { Data } from "./data";
+
 export class Project {
     public id?: number;
     public name?: string;
