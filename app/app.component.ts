@@ -141,6 +141,12 @@ export class AppComponent implements OnInit {
         let mockArray: Project[] = [];
         let i = 0;
 
+        if (dateStart == undefined || dateEnd == undefined ) {
+            this.errNumber = -2;
+            this.isError = true;
+            return;
+        }
+
         if (dateEnd.getTime() > dateStart.getTime()) {
             this.projectArray.forEach(item => {
                 if (item.created_at.getTime() >= dateStart.getTime() &&
@@ -153,7 +159,7 @@ export class AppComponent implements OnInit {
             console.log("Filtering by Date: DONE");
             return;
         }
-        this.errNumber = -2;    // DateEND < DateSTART
+        this.errNumber = -3;    // DateEND < DateSTART
         this.isError = true;
         return;
     }
