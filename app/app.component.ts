@@ -65,7 +65,6 @@ export class AppComponent implements OnInit {
     public onChangeEnd(value: Date): void {
         this.endDate = value;
     }
-
     // End of DatePicker (Kendo)
 
     // Busy
@@ -110,36 +109,53 @@ export class AppComponent implements OnInit {
     // ComboBox (Kendo)
     public comboBoxValue: string;
 
+    // function that check the the possible combination with endDate, startDate and comboBoxValue
+    // if everything is undefined it wont start the fetch
     checkAndStart(): void {
-        if ((this.startDate === undefined ) || (this.endDate === undefined)) {
+        if ((this.startDate == undefined) || (this.endDate == undefined)) {
             if (this.comboBoxValue != undefined) {
                 this.fetchAndFill(this.comboBoxValue);
                 return;
             }
-            this.errNumber = -1;
+            this.errNumber = -1;    // Everything is Undefined
             this.isError = true;
             return;
+        } else {
+            if (this.comboBoxValue != undefined) {
+                this.fetchAndFill(this.comboBoxValue, this.startDate, this.endDate);
+            } else {
+                let mock: string = undefined
+                this.fetchAndFill(mock, this.startDate, this.endDate);
+            }
         }
-        this.fetchAndFill(this.comboBoxValue, this.startDate, this.endDate);
+
 
     }
 
+    // Function that using the dateStart and dateEnd set a range
+    // where all project must be inbetween
+    // then it check if the project (cycling through the whole array)
+    // is inside the range, adding it on a mock array
+    // at the end it will overwrite the original array with the new one
     filterForDate(dateStart: Date, dateEnd: Date): void {
         let mockArray: Project[] = [];
         let i = 0;
 
-        if (dateEnd.getFullYear() > dateStart.getFullYear()) {
-            console.log("Year END > Year START");
+        if (dateEnd.getTime() > dateStart.getTime()) {
+            this.projectArray.forEach(item => {
+                if (item.created_at.getTime() >= dateStart.getTime() &&
+                    item.last_activity_at.getTime() <= dateEnd.getTime()) {
+                    mockArray[i] = item;
+                    i += 1;
+                }
+            });
+            this.projectArray = mockArray;
+            console.log("Filtering by Date: DONE");
+            return;
         }
-        /* this.projectArray.forEach(item => {
-             if (item.created_at >= dateStart && item.last_activity_at <= dateEnd ) {
-                 mockArray[i] = item;
-             }
-         });
-
-         this.projectArray = mockArray;
-         console.log("Filtering by Date: DONE");*/
-
+        this.errNumber = -2;    // DateEND < DateSTART
+        this.isError = true;
+        return;
     }
 
     // Function to fetch both Projects and Issues
