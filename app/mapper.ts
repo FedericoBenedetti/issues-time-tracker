@@ -28,6 +28,8 @@ export class Mapper {
             ProjectArray[i] = new Project();
             ProjectArray[i].name = item.name;
             ProjectArray[i].id = item.id;
+            ProjectArray[i].created_at = item.created_at;
+            ProjectArray[i].last_activity_at = item.last_activity_at;
             i++;
         });
 

@@ -13,4 +13,6 @@ export class Project {
     public timeEstimated: Data = new Data;
     public timeSpent: Data = new Data;
     public timeOut: number = 0;
+    public created_at: Date;
+    public last_activity_at: Date;
 }

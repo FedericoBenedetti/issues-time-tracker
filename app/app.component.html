@@ -22,10 +22,12 @@
 
     Date Start:
     <kendo-datepicker [value]="startDate"
-                      (valueChange)="onChange($event)"></kendo-datepicker>
+                      (valueChange)="onChangeStart($event)"></kendo-datepicker>
     Date End:
     <kendo-datepicker [value]="endDate"
-                      (valueChange)="onChange($event)"></kendo-datepicker>
+                      (valueChange)="onChangeEnd($event)"></kendo-datepicker>
+
+    <button kendoButton (click)="checkAndStart()"> Fetch </button>
 </div>
 
 <kendo-grid [data]="gridData"

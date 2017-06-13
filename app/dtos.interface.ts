@@ -1,6 +1,8 @@
 export interface IProjectDTO {
     id: number;
     name: string;
+    created_at: Date;
+    last_activity_at: Date;
 }
 
 export interface IGroupDTO {

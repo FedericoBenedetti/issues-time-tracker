@@ -2,8 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { HttpModule } from "@angular/http";
 
 import { SortDescriptor, orderBy } from "@progress/kendo-data-query";
-import { GridComponent, GridDataResult,
-        PageChangeEvent, DataStateChangeEvent } from "@progress/kendo-angular-grid";
+import {
+    GridComponent, GridDataResult,
+    PageChangeEvent, DataStateChangeEvent
+} from "@progress/kendo-angular-grid";
 import { process, State } from "@progress/kendo-data-query";
 
 import * as Rx from "rxjs/Rx";
@@ -53,11 +55,15 @@ export class AppComponent implements OnInit {
     // End of (Kendo)
 
     // DatePicker (Kendo)
-    public startDate: Date = new Date();
-    public endDate: Date = new Date();
+    public startDate: Date = undefined;
+    public endDate: Date = undefined;
 
-    public onChange(value: Date): void {
-        console.log('change', value);
+    public onChangeStart(value: Date): void {
+        this.startDate = value;
+    }
+
+    public onChangeEnd(value: Date): void {
+        this.endDate = value;
     }
 
     // End of DatePicker (Kendo)
@@ -97,14 +103,51 @@ export class AppComponent implements OnInit {
     // that i want to fetch Projects and Issues
     public valueChange(value: string): void {
         console.log("Selected Group: ", value);
-        this.fetchAndFill(value);
+        this.comboBoxValue = value;
+        return;
+    }
+
+    // ComboBox (Kendo)
+    public comboBoxValue: string;
+
+    checkAndStart(): void {
+        if ((this.startDate === undefined ) || (this.endDate === undefined)) {
+            if (this.comboBoxValue != undefined) {
+                this.fetchAndFill(this.comboBoxValue);
+                return;
+            }
+            this.errNumber = -1;
+            this.isError = true;
+            return;
+        }
+        this.fetchAndFill(this.comboBoxValue, this.startDate, this.endDate);
+
+    }
+
+    filterForDate(dateStart: Date, dateEnd: Date): void {
+        let mockArray: Project[] = [];
+        let i = 0;
+
+        if (dateEnd.getFullYear() > dateStart.getFullYear()) {
+            console.log("Year END > Year START");
+        }
+        /* this.projectArray.forEach(item => {
+             if (item.created_at >= dateStart && item.last_activity_at <= dateEnd ) {
+                 mockArray[i] = item;
+             }
+         });
+
+         this.projectArray = mockArray;
+         console.log("Filtering by Date: DONE");*/
+
     }
 
     // Function to fetch both Projects and Issues
-    public fetchAndFill(group?: string): void {
+    public fetchAndFill(group?: string, dateStart?: Date, dateEnd?: Date): void {
         this.busy = this.restService.retrieveProjects(group)
             .subscribe((projectArray: Project[]) => {
                 this.projectArray = projectArray;
+                this.filterForDate(dateStart, dateEnd);
                 console.log("Fetch of Projects DONE");
                 console.log("Projects Dimension: ", this.projectArray.length);
                 this.gridData = process(this.projectArray, this.state);
