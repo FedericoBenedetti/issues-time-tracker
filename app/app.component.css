@@ -10,3 +10,7 @@
 #busy {
     position: center;
 }
+
+#toolbar {
+    display: inline-block;
+}

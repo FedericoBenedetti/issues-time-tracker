@@ -1,15 +1,18 @@
 import { Component, OnInit } from "@angular/core";
 import { HttpModule } from "@angular/http";
-import { HttpService } from "./http.service";
 
 import { SortDescriptor, orderBy } from "@progress/kendo-data-query";
-import { GridDataResult, PageChangeEvent } from "@progress/kendo-angular-grid";
+import { GridComponent, GridDataResult,
+        PageChangeEvent, DataStateChangeEvent } from "@progress/kendo-angular-grid";
+import { process, State } from "@progress/kendo-data-query";
 
 import * as Rx from "rxjs/Rx";
 
 import { Project } from "./project";
 import { Issue } from "./issue";
 import { Group } from "./group";
+
+import { HttpService } from "./http.service";
 
 @Component({
     selector: "my-app",
@@ -23,6 +26,9 @@ import { Group } from "./group";
 
 export class AppComponent implements OnInit {
 
+    // Array of Projects, empty now
+    public projectArray: Project[] = [];
+
     // DialogBox
     private isError: boolean = false;
     private errNumber: number = 0;
@@ -32,45 +38,29 @@ export class AppComponent implements OnInit {
     }
     // End DialogBox
 
-    // Kendo GridView
-    private gridView: GridDataResult;
+    // Sorting, Grouping, Filtering (Kendo)
+    private state: State = {
+        skip: 0,
+        take: 10
+    };
 
-    // Kendo Paging
-    private pageSize: number = 10;
-    private skip: number = 0;
+    private gridData: GridDataResult = process(this.projectArray, this.state);
 
-    protected pageChange(event: PageChangeEvent): void {
-        this.skip = event.skip;
-        this.loadItems();
+    protected dataStateChange(state: DataStateChangeEvent): void {
+        this.state = state;
+        this.gridData = process(this.projectArray, this.state);
+    }
+    // End of (Kendo)
+
+    // DatePicker (Kendo)
+    public startDate: Date = new Date();
+    public endDate: Date = new Date();
+
+    public onChange(value: Date): void {
+        console.log('change', value);
     }
 
-    private loadItems(): void {
-        this.gridView = {
-            data: this.projectArray.slice(this.skip, this.skip + this.pageSize),
-            total: this.projectArray.length
-        };
-    }
-    // End  of Kendo Paging
-
-    // Kendo Sorting
-    private sort: SortDescriptor[] = [];
-
-    protected sortChange(sort: SortDescriptor[]): void {
-        this.sort = sort;
-        this.loadProducts();
-    }
-
-    private loadProducts(): void {
-        this.gridView = {
-            data: orderBy(this.projectArray, this.sort),
-            total: this.projectArray.length
-        };
-        this.loadItems();
-    }
-    // End of Kendo Sorting
-
-    // Array of Projects, empty now
-    public projectArray: Project[] = [];
+    // End of DatePicker (Kendo)
 
     // Busy
     busy: Rx.Subscription;
@@ -117,13 +107,14 @@ export class AppComponent implements OnInit {
                 this.projectArray = projectArray;
                 console.log("Fetch of Projects DONE");
                 console.log("Projects Dimension: ", this.projectArray.length);
-                this.loadProducts();
+                this.gridData = process(this.projectArray, this.state);
                 projectArray.forEach(item => {
                     this.busy = this.restService.retrieveIssues(item.id)
                         .subscribe(((issues: Issue[]) => {
                             item.pjIssues = issues;
                             this.checkIssueOutOfTime(item);
                             this.calcData(item);
+                            this.gridData = process(this.projectArray, this.state);
                         }),
                         Error => {
                             console.log("Error (Issues) ", Error);
@@ -182,7 +173,4 @@ export class AppComponent implements OnInit {
     checkLength(dataItem: Project): boolean {
         return dataItem.timeOutIssue.length > 0;
     }
-
-
-
 }

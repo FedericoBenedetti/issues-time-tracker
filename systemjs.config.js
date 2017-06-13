@@ -30,6 +30,7 @@
             "@progress/kendo-angular-intl": "npm:@progress/kendo-angular-intl/dist/cdn/js/kendo-angular-intl.js",
             "@progress/kendo-angular-l10n": "npm:@progress/kendo-angular-l10n/dist/cdn/js/kendo-angular-l10n.js",
             "@progress/kendo-angular-inputs": "npm:@progress/kendo-angular-inputs/dist/cdn/js/kendo-angular-inputs.js",
+            "@progress/kendo-angular-dateinputs": "npm:@progress/kendo-angular-dateinputs/dist/cdn/js/kendo-angular-dateinputs.js",
             "@progress/kendo-angular-dropdowns": "npm:@progress/kendo-angular-dropdowns/dist/cdn/js/kendo-angular-dropdowns.js",
             "@progress/kendo-angular-grid": "npm:@progress/kendo-angular-grid/dist/cdn/js/kendo-angular-grid.js",
             "@progress/kendo-angular-resize-sensor": "npm:@progress/kendo-angular-resize-sensor/dist/cdn/js/kendo-angular-resize-sensor.js",

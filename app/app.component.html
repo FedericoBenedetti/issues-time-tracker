@@ -14,20 +14,27 @@
     </kendo-dialog-actions>
 </kendo-dialog>
 
-<div>
-    <p>Groups:</p>
+<div id="toolbar">
+    Groups:
     <kendo-combobox [data]="comboBoxGroup"
                     (valueChange)="valueChange($event)">
     </kendo-combobox>
+
+    Date Start:
+    <kendo-datepicker [value]="startDate"
+                      (valueChange)="onChange($event)"></kendo-datepicker>
+    Date End:
+    <kendo-datepicker [value]="endDate"
+                      (valueChange)="onChange($event)"></kendo-datepicker>
 </div>
 
-<kendo-grid [data]="gridView"
-            [sortable]="{ mode: 'multiple' }"
-            [sort]="sort" (sortChange)="sortChange($event)"
-            [pageSize]="pageSize"
-            [skip]="skip"
+<kendo-grid [data]="gridData"
+            [pageSize]="state.take"
+            [skip]="state.skip"
+            [sort]="state.sort"
+            [sortable]="true"
             [pageable]="true"
-            (pageChange)="pageChange($event)">
+            (dataStateChange)="dataStateChange($event)">
 
     <kendo-grid-column field="id" title="Project ID">
     </kendo-grid-column>
@@ -66,10 +73,10 @@
                         <p id="grid-detail"><strong>IID:</strong> {{item.iid}}</p>
                     </td>
                     <td>
-                        <p id="grid-detail"><strong>Time Estimated:</strong> {{item.time_estimate}}</p> s
+                        <p id="grid-detail"><strong>Time Estimated:</strong> {{item.time_estimate / 3600}}</p> h
                     </td>
                     <td>
-                        <p id="grid-detail"><strong>Time Spent:</strong> {{item.total_time_spent}}</p> s
+                        <p id="grid-detail"><strong>Time Spent:</strong> {{item.total_time_spent / 3600}}</p> h
                     </td>
                 </tr>
             </table>
