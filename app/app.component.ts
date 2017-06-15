@@ -169,7 +169,9 @@ export class AppComponent implements OnInit {
         this.busy = this.restService.retrieveProjects(group)
             .subscribe((projectArray: Project[]) => {
                 this.projectArray = projectArray;
-                this.filterForDate(dateStart, dateEnd);
+                if (dateStart && dateEnd ) {
+                    this.filterForDate(dateStart, dateEnd);
+                }
                 console.log("Fetch of Projects DONE");
                 console.log("Projects Dimension: ", this.projectArray.length);
                 this.gridData = process(this.projectArray, this.state);
