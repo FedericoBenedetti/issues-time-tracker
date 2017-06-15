@@ -4,7 +4,7 @@ import { Data } from "./data";
 export class Project {
     public id?: number;
     public name?: string;
-    public pjIssues?: Issue[];
+    public pjIssues?: Issue[] = [];
     public timeOutIssue?: Issue[] = [];
     public nActive?: number = 0;
     public nClosed?: number = 0;

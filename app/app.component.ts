@@ -141,7 +141,7 @@ export class AppComponent implements OnInit {
         let mockArray: Project[] = [];
         let i = 0;
 
-        if (dateStart == undefined || dateEnd == undefined ) {
+        if (dateStart == undefined || dateEnd == undefined) {
             this.errNumber = -2;
             this.isError = true;
             return;
@@ -169,27 +169,28 @@ export class AppComponent implements OnInit {
         this.busy = this.restService.retrieveProjects(group)
             .subscribe((projectArray: Project[]) => {
                 this.projectArray = projectArray;
-                if (dateStart && dateEnd ) {
+                if (dateStart && dateEnd) {
                     this.filterForDate(dateStart, dateEnd);
                 }
                 console.log("Fetch of Projects DONE");
                 console.log("Projects Dimension: ", this.projectArray.length);
                 this.gridData = process(this.projectArray, this.state);
+
+                let arrayDeStaminchia = [Rx.Observable.of({})];
                 projectArray.forEach(item => {
-                    this.busy = this.restService.retrieveIssues(item.id)
-                        .subscribe(((issues: Issue[]) => {
+                    let innerObservable = this.restService.retrieveIssues(item.id)
+                        .do(((issues: Issue[]) => {
                             item.pjIssues = issues;
                             this.checkIssueOutOfTime(item);
                             this.calcData(item);
                             this.gridData = process(this.projectArray, this.state);
-                        }),
-                        Error => {
-                            console.log("Error (Issues) ", Error);
-                            this.errNumber = Error.status;
-                            this.isError = true;
-                        })
+                        }));
+                    arrayDeStaminchia.push(innerObservable);
 
                 });
+                this.busy = Rx.Observable.forkJoin(arrayDeStaminchia)
+                    .subscribe(
+                    (err) => console.log("error: ", err));
                 console.log("Fetch of Issues DONE");
             },
             Error => {

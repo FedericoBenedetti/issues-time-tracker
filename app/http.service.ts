@@ -71,7 +71,7 @@ export class HttpService {
                 return res.json();
             }).concatMap(Project => {
 
-                let observableArray = [];
+                let observableArray = [Rx.Observable.of({})];
                 let totalPjs: Project[] = [];
                 let i = 1;
                 while (i <= pages) {
@@ -105,7 +105,7 @@ export class HttpService {
             }).map((res: Response) => {
                 return res.json();
             }).concatMap(Issue => {
-                let obsIssuesArray = [];
+                let obsIssuesArray = [Rx.Observable.of({})];
                 let loadedIssues: Issue[] = [];
                 let i: number = 1;
 
