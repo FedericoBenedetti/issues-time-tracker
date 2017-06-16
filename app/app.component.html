@@ -15,10 +15,6 @@
 </kendo-dialog>
 
 <div id="toolbar">
-    Search:
-    <kendo-autocomplete [data]="projectArray" [valueField]="'name'">
-    </kendo-autocomplete>
-
         Groups:
         <kendo-dropdownlist [data]="dropDownGroup" (valueChange)="valueChange($event)">
         </kendo-dropdownlist>
@@ -32,27 +28,46 @@
 </div>
 
 <kendo-grid [data]="gridData" [pageSize]="state.take" [skip]="state.skip" [sort]="state.sort" [sortable]="true" [pageable]="true"
-    (dataStateChange)="dataStateChange($event)">
+    (dataStateChange)="dataStateChange($event)" [filterable]="true">
 
     <kendo-grid-column field="id" title="Project ID">
+        <ng-template kendoGridFilterCellTemplate>
+        </ng-template>
     </kendo-grid-column>
-    <kendo-grid-column field="name" title="Project Name">
+    <kendo-grid-column field="name" title="Project Name" >
+        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+         <kendo-grid-string-filter-cell
+           [showOperators]="false"
+           [column]="column"
+           [filter]="filter">
+         </kendo-grid-string-filter-cell>
+       </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="nActive" title="Opened Issue">
+        <ng-template kendoGridFilterCellTemplate>
+        </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="nClosed" title="Closed Issue">
+        <ng-template kendoGridFilterCellTemplate>
+        </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="timeOut" title="Issue out of time">
+        <ng-template kendoGridFilterCellTemplate>
+        </ng-template>
         <ng-template kendoGridCellTemplate let-dataItem>
             {{dataItem.timeOut}}
         </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="timeEstimated" title="Time Estimated">
+        <ng-template kendoGridFilterCellTemplate>
+        </ng-template>
         <ng-template kendoGridCellTemplate let-dataItem>
             {{dataItem.timeEstimated.h}} h
         </ng-template>
     </kendo-grid-column>
     <kendo-grid-column field="timeSpent" title="Time Spent">
+        <ng-template kendoGridFilterCellTemplate>
+        </ng-template>
         <ng-template kendoGridCellTemplate let-dataItem>
             {{dataItem.timeSpent.h}} h
         </ng-template>
