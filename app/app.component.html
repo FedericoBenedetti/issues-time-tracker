@@ -15,28 +15,24 @@
 </kendo-dialog>
 
 <div id="toolbar">
-    Groups:
-    <kendo-combobox [data]="comboBoxGroup"
-                    (valueChange)="valueChange($event)">
-    </kendo-combobox>
+    Search:
+    <kendo-autocomplete [data]="projectArray" [valueField]="'name'">
+    </kendo-autocomplete>
 
-    Date Start:
-    <kendo-datepicker [value]="startDate"
-                      (valueChange)="onChangeStart($event)"></kendo-datepicker>
-    Date End:
-    <kendo-datepicker [value]="endDate"
-                      (valueChange)="onChangeEnd($event)"></kendo-datepicker>
+        Groups:
+        <kendo-combobox [data]="comboBoxGroup" (valueChange)="valueChange($event)">
+        </kendo-combobox>
 
-    <button kendoButton (click)="checkAndStart()"> Fetch </button>
+        Date Start:
+        <kendo-datepicker [value]="startDate" (valueChange)="onChangeStart($event)"></kendo-datepicker>
+        Date End:
+        <kendo-datepicker [value]="endDate" (valueChange)="onChangeEnd($event)"></kendo-datepicker>
+
+        <button kendoButton (click)="checkAndStart()"> Fetch </button>
 </div>
 
-<kendo-grid [data]="gridData"
-            [pageSize]="state.take"
-            [skip]="state.skip"
-            [sort]="state.sort"
-            [sortable]="true"
-            [pageable]="true"
-            (dataStateChange)="dataStateChange($event)">
+<kendo-grid [data]="gridData" [pageSize]="state.take" [skip]="state.skip" [sort]="state.sort" [sortable]="true" [pageable]="true"
+    (dataStateChange)="dataStateChange($event)">
 
     <kendo-grid-column field="id" title="Project ID">
     </kendo-grid-column>
