@@ -38,76 +38,90 @@
     </div>
 
     <div class="app-route">
-        <button class ="btn-" id="app-button-table" kendoButton [primary]="true"> Table </button>
-        <button class ="btn-" id="app-button-graphs" kendoButton> Graphs </button>
+        <button class="btn-" id="app-button-table" kendoButton (click)="toggleTable()" [primary]="true"> Table </button>
+        <button class="btn-" id="app-button-graphs" (click)="toggleGraphs()" kendoButton> Graphs </button>
     </div>
 
 </div>
 <br>
 
-<kendo-grid [data]="gridData" [pageSize]="state.take" [skip]="state.skip" [sort]="state.sort" [sortable]="true" [pageable]="true"
-    (dataStateChange)="dataStateChange($event)" [filterable]="true">
+<div class="body-table" [hidden]="isTable()">
+    <kendo-grid [data]="gridData" [pageSize]="state.take" [skip]="state.skip" [sort]="state.sort" [sortable]="true" [pageable]="true"
+        (dataStateChange)="dataStateChange($event)" [filterable]="true">
 
-    <kendo-grid-column field="id" title="Project ID">
-        <ng-template kendoGridFilterCellTemplate>
+        <kendo-grid-column field="id" title="Project ID">
+            <ng-template kendoGridFilterCellTemplate>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="name" title="Project Name">
+            <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                <kendo-grid-string-filter-cell [showOperators]="false" [column]="column" [filter]="filter">
+                </kendo-grid-string-filter-cell>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="nActive" title="Opened Issue">
+            <ng-template kendoGridFilterCellTemplate>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="nClosed" title="Closed Issue">
+            <ng-template kendoGridFilterCellTemplate>
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="timeOut" title="Issue out of time">
+            <ng-template kendoGridFilterCellTemplate>
+            </ng-template>
+            <ng-template kendoGridCellTemplate let-dataItem>
+                {{dataItem.timeOut}}
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="timeEstimated" title="Time Estimated">
+            <ng-template kendoGridFilterCellTemplate>
+            </ng-template>
+            <ng-template kendoGridCellTemplate let-dataItem>
+                {{dataItem.timeEstimated.h}} h
+            </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="timeSpent" title="Time Spent">
+            <ng-template kendoGridFilterCellTemplate>
+            </ng-template>
+            <ng-template kendoGridCellTemplate let-dataItem>
+                {{dataItem.timeSpent.h}} h
+            </ng-template>
+        </kendo-grid-column>
+        <ng-template kendoGridDetailTemplate let-dataItem [kendoGridDetailTemplateShowIf]="checkLength">
+            <div *ngFor="let item of dataItem.timeOutIssue">
+                <table>
+                    <tr>
+                        <td>
+                            <p id="grid-detail" style="margin-left: 1em"><strong>Name:</strong><a href={ {item.html_link}} (click)="newWindow(item.html_link)" target="_blank"> {{item.title}}</a></p>
+                        </td>
+                        <td>
+                            <p id="grid-detail"><strong>State:</strong> {{item.state}}</p>
+                        </td>
+                        <td>
+                            <p id="grid-detail"><strong>IID:</strong> {{item.iid}}</p>
+                        </td>
+                        <td>
+                            <p id="grid-detail"><strong>Time Estimated:</strong> {{item.time_estimate / 3600}}</p> h
+                        </td>
+                        <td>
+                            <p id="grid-detail"><strong>Time Spent:</strong> {{item.total_time_spent / 3600}}</p> h
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="name" title="Project Name">
-        <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
-            <kendo-grid-string-filter-cell [showOperators]="false" [column]="column" [filter]="filter">
-            </kendo-grid-string-filter-cell>
-        </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="nActive" title="Opened Issue">
-        <ng-template kendoGridFilterCellTemplate>
-        </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="nClosed" title="Closed Issue">
-        <ng-template kendoGridFilterCellTemplate>
-        </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="timeOut" title="Issue out of time">
-        <ng-template kendoGridFilterCellTemplate>
-        </ng-template>
-        <ng-template kendoGridCellTemplate let-dataItem>
-            {{dataItem.timeOut}}
-        </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="timeEstimated" title="Time Estimated">
-        <ng-template kendoGridFilterCellTemplate>
-        </ng-template>
-        <ng-template kendoGridCellTemplate let-dataItem>
-            {{dataItem.timeEstimated.h}} h
-        </ng-template>
-    </kendo-grid-column>
-    <kendo-grid-column field="timeSpent" title="Time Spent">
-        <ng-template kendoGridFilterCellTemplate>
-        </ng-template>
-        <ng-template kendoGridCellTemplate let-dataItem>
-            {{dataItem.timeSpent.h}} h
-        </ng-template>
-    </kendo-grid-column>
-    <ng-template kendoGridDetailTemplate let-dataItem [kendoGridDetailTemplateShowIf]="checkLength">
-        <div *ngFor="let item of dataItem.timeOutIssue">
-            <table>
-                <tr>
-                    <td>
-                        <p id="grid-detail" style="margin-left: 1em"><strong>Name:</strong><a href= {{item.html_link}} (click)="newWindow(item.html_link)" target="_blank"> {{item.title}}</a></p>
-                    </td>
-                    <td>
-                        <p id="grid-detail"><strong>State:</strong> {{item.state}}</p>
-                    </td>
-                    <td>
-                        <p id="grid-detail"><strong>IID:</strong> {{item.iid}}</p>
-                    </td>
-                    <td>
-                        <p id="grid-detail"><strong>Time Estimated:</strong> {{item.time_estimate / 3600}}</p> h
-                    </td>
-                    <td>
-                        <p id="grid-detail"><strong>Time Spent:</strong> {{item.total_time_spent / 3600}}</p> h
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </ng-template>
-</kendo-grid>
+    </kendo-grid>
+</div>
+
+<div class="body-graph" [hidden]="isGraph()">
+    <kendo-chart [categoryAxis]="{ categories: categories }">
+        <kendo-chart-title text="Gross domestic product growth /GDP annual %/"></kendo-chart-title>
+        <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
+        <kendo-chart-tooltip format="{0}%"></kendo-chart-tooltip>
+        <kendo-chart-series>
+            <kendo-chart-series-item *ngFor="let item of projectArray" type="line" [data]="item.timeOut" [name]="item.name">
+            </kendo-chart-series-item>
+        </kendo-chart-series>
+    </kendo-chart>
+</div>

@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GridModule } from "@progress/kendo-angular-grid";
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
+import { ChartsModule } from '@progress/kendo-angular-charts';
 import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
 
 import { BusyModule } from 'angular2-busy';
@@ -28,6 +29,7 @@ import { HttpService } from "./http.service";
         DropDownsModule,
         BrowserAnimationsModule,
         BusyModule,
+        ChartsModule,
         DateInputsModule
     ],
 

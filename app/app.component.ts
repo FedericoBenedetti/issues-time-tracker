@@ -32,6 +32,16 @@ export class AppComponent implements OnInit {
     // Array of Projects, empty now
     public projectArray: Project[] = [];
 
+    // Show or Hide the Table/Graphs div
+    public table: boolean = false;
+    public graph: boolean = true;
+    public isGraph(): boolean {
+        return this.graph;
+    }
+    public isTable(): boolean {
+        return this.table;
+    }
+
     // DialogBox
     private isError: boolean = false;
     private errNumber: number = 0;
@@ -270,5 +280,17 @@ export class AppComponent implements OnInit {
     // needed to apply "+" near each row of the table
     checkLength(dataItem: Project): boolean {
         return dataItem.timeOutIssue.length > 0;
+    }
+
+    // Toggling function for switching between
+    // table and graphs
+    toggleTable(): void {
+        this.table = false;
+        this.graph = true;
+    }
+
+    toggleGraphs(): void {
+        this.graph = false;
+        this.table = true;
     }
 }
