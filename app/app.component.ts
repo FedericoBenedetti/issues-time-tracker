@@ -203,13 +203,14 @@ export class AppComponent implements OnInit {
                             item.pjIssues = issues;
                             this.checkIssueOutOfTime(item);
                             this.calcData(item);
-                            this.gridData = process(this.projectArray, this.state);
                         }));
                     obsArray.push(innerObservable);
 
                 });
                 this.busy = Rx.Observable.forkJoin(obsArray)
-                    .subscribe()
+                    .subscribe(() => {
+                        this.gridData = process(this.projectArray, this.state);
+                    });
                 console.log("Fetch of Issues DONE");
                 this.checkIfQueue = true;
             },
@@ -247,12 +248,16 @@ export class AppComponent implements OnInit {
         project.pjIssues.forEach(issue => {
             if (issue.time_estimate < ((issue.total_time_spent * 0.9) - 3600)) {
                 issue.html_link = this.baseUrl + this.dropDownValue + "/" +
-                    project.name + "/issues/" + issue.iid;
+                    project.name + "/issues/" + issue.iid + "?private_token=ij7kczXd7fGz2dyJxT5Y";
                 // console.log(issue.html_link);
                 project.timeOut += 1;
                 project.timeOutIssue.push(issue);
             }
         });
+    }
+
+    newWindow(htmlLink: string): void {
+        open(htmlLink, 'Chrome');
     }
 
     // Parsing from second to hour
