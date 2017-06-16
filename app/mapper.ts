@@ -10,11 +10,11 @@ export class Mapper {
 
     static grpDROtoGrp(groupDTOs: any): Group[] {
         let GroupArray: Group[] = [];
-        let i: number = 0;
+
         groupDTOs.forEach(item => {
-            GroupArray[i] = new Group();
-            GroupArray[i].name = item.name;
-            i++;
+            let newGroup: Group = new Group();
+            newGroup.name = item.name;
+            GroupArray.push(newGroup);
         });
 
         return GroupArray;
@@ -22,15 +22,14 @@ export class Mapper {
 
     static pjDTOtoPj(ProjectDTOs: any): Project[] {
         let ProjectArray: Project[] = [];
-        let i: number = 0;
 
         ProjectDTOs.forEach(item => {
-            ProjectArray[i] = new Project();
-            ProjectArray[i].name = item.name;
-            ProjectArray[i].id = item.id;
-            ProjectArray[i].created_at = new Date(item.created_at);
-            ProjectArray[i].last_activity_at = new Date(item.last_activity_at);
-            i++;
+            let newProject: Project = new Project();
+            newProject.name = item.name;
+            newProject.id = item.id;
+            newProject.created_at = new Date(item.created_at);
+            newProject.last_activity_at = new Date(item.last_activity_at);
+            ProjectArray.push(newProject);
         });
 
         return ProjectArray;
@@ -38,14 +37,13 @@ export class Mapper {
 
     static isDTOtoIs(IssueDTOs: DTO.IIssueDTO[]): Issue[] {
         let issueArray: Issue[] = [];
-        let i: number = 0;
 
         IssueDTOs.forEach(item => {
-            issueArray[i] = new Issue();
-            issueArray[i].state = item.state;
-            issueArray[i].iid = item.iid;
-            issueArray[i].title = item.title;
-            i++;
+            let newIssue: Issue = new Issue();
+            newIssue.state = item.state;
+            newIssue.iid = item.iid;
+            newIssue.title = item.title;
+            issueArray.push(newIssue);
         });
 
         return issueArray;

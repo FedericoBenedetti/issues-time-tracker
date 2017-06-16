@@ -30,8 +30,7 @@ export class HttpService {
             .concatMap(Group => {
                 let observableArray = [];
                 let totalGrps: Group[] = [];
-                let i = 1;
-                while (i <= pages) {
+                for (let i = 1; i <= pages; i ++) {
                     let groupUrl: string = this.projectBaseUrl + "groups?page=" + i
                         + "&per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y";
                     let innerObsGroupArray = this.http.get(groupUrl)
@@ -44,7 +43,6 @@ export class HttpService {
                             totalGrps.push(grp);
                         })));
                     observableArray.push(innerObsGroupArray);
-                    i += 1;
                 }
 
                 return Rx.Observable.forkJoin(observableArray)
@@ -70,11 +68,9 @@ export class HttpService {
             }).map((res: Response) => {
                 return res.json();
             }).concatMap(Project => {
-
                 let observableArray = [Rx.Observable.of({})];
                 let totalPjs: Project[] = [];
-                let i = 1;
-                while (i <= pages) {
+                for (let i = 1; i <= pages; i ++) {
                     let innerObsArray = this.http.get(urlForFetch + "projects?page=" + i
                         + "&per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y")
                         .map((res: Response) => {
@@ -84,7 +80,6 @@ export class HttpService {
                             totalPjs.push(pj);
                         })));
                     observableArray.push(innerObsArray);
-                    i = i + 1;
                 }
 
                 return Rx.Observable.forkJoin(observableArray)
@@ -107,9 +102,7 @@ export class HttpService {
             }).concatMap(Issue => {
                 let obsIssuesArray = [Rx.Observable.of({})];
                 let loadedIssues: Issue[] = [];
-                let i: number = 1;
-
-                while (i <= pages) {
+                for (let i = 1; i <= pages; i ++) {
                     let innerIssArray = this.http.get(projectIssueUrl)
                         .map((res: Response) => {
                             let IssueDTOs: DTO.IIssueDTO[] = res.json();
@@ -138,7 +131,6 @@ export class HttpService {
 
                         })))
                     obsIssuesArray.push(innerIssArray);
-                    i = i + 1;
                 }
 
                 return Rx.Observable.forkJoin(obsIssuesArray)

@@ -20,15 +20,15 @@
     </kendo-autocomplete>
 
         Groups:
-        <kendo-combobox [data]="comboBoxGroup" (valueChange)="valueChange($event)">
-        </kendo-combobox>
+        <kendo-dropdownlist [data]="dropDownGroup" (valueChange)="valueChange($event)">
+        </kendo-dropdownlist>
 
         Date Start:
         <kendo-datepicker [value]="startDate" (valueChange)="onChangeStart($event)"></kendo-datepicker>
         Date End:
         <kendo-datepicker [value]="endDate" (valueChange)="onChangeEnd($event)"></kendo-datepicker>
 
-        <button kendoButton (click)="checkAndStart()"> Fetch </button>
+        <button kendoButton [disabled]="!isCheckIfQueue()" (click)="checkAndStart()"> Fetch </button>
 </div>
 
 <kendo-grid [data]="gridData" [pageSize]="state.take" [skip]="state.skip" [sort]="state.sort" [sortable]="true" [pageable]="true"
@@ -62,7 +62,7 @@
             <table>
                 <tr>
                     <td>
-                        <p id="grid-detail" style="margin-left: 1em"><strong>Name:</strong> {{item.title}}</p>
+                        <p id="grid-detail" style="margin-left: 1em"><strong>Name:</strong><a href= {{item.html_link}}  target="_blank"> {{item.title}}</a></p>
                     </td>
                     <td>
                         <p id="grid-detail"><strong>State:</strong> {{item.state}}</p>

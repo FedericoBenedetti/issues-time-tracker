@@ -56,8 +56,8 @@ export class AppComponent implements OnInit {
     // End of (Kendo)
 
     // DatePicker (Kendo)
-    public startDate: Date = undefined;
-    public endDate: Date = undefined;
+    public startDate: Date;
+    public endDate: Date;
 
     public onChangeStart(value: Date): void {
         this.startDate = value;
@@ -74,7 +74,7 @@ export class AppComponent implements OnInit {
     // Initializing both the array of Group, and the Array of string
     // containing the name of each group. Needed by kendo-combobox
     public projectGroups: Group[] = [];
-    public comboBoxGroup: Array<string> = new Array<string>();
+    public dropDownGroup: Array<string> = new Array<string>();
     // End
 
     constructor(
@@ -90,12 +90,11 @@ export class AppComponent implements OnInit {
         this.busy = this.restService.retrieveGroups()
             .subscribe((groupArray: Group[]) => {
                 this.projectGroups = groupArray;
-                console.log("Fetch of Groups DONE");
-                let i = 0;
                 this.projectGroups.forEach(group => {
-                    this.comboBoxGroup[i] = group.name;
-                    i += 1;
-                })
+                    this.dropDownGroup.push(group.name);
+                });
+                this.dropDownGroup.sort();
+                console.log("Fetch of Groups DONE");
             });
     }
 
@@ -103,35 +102,43 @@ export class AppComponent implements OnInit {
     // that i want to fetch Projects and Issues
     public valueChange(value: string): void {
         console.log("Selected Group: ", value);
-        this.comboBoxValue = value;
+        this.dropDownValue = value;
         return;
     }
 
-    // ComboBox (Kendo)
-    public comboBoxValue: string;
+    // DropDown (Kendo)
+    public dropDownValue: string;
+
+    // this variable will prevent the program to
+    // queue multiple fetch, allowing only once per time
+    public checkIfQueue: boolean = true;
+
+    public isCheckIfQueue(): boolean {
+        return this.checkIfQueue;
+    }
 
     // function that check the the possible combination with endDate, startDate and comboBoxValue
     // if everything is undefined it wont start the fetch
     checkAndStart(): void {
-        this.fetchAndFill(this.comboBoxValue, this.startDate, this.endDate);
-        /*if ((this.startDate == undefined) || (this.endDate == undefined)) {
-            if (this.comboBoxValue != undefined) {
-                this.fetchAndFill(this.comboBoxValue);
-                return;
+        if (this.checkIfQueue == true) {
+            if (this.startDate && this.endDate) {
+                if (this.checkDate(this.startDate, this.endDate)) {
+                    this.errNumber = -3;    // DateEND < DateSTART
+                    this.isError = true;
+                    return;
+                }
             }
-            this.errNumber = -1;    // Everything is Undefined
-            this.isError = true;
-            return;
-        } else {
-            if (this.comboBoxValue != undefined) {
-                this.fetchAndFill(this.comboBoxValue, this.startDate, this.endDate);
-            } else {
-                let mock: string = undefined
-                this.fetchAndFill(mock, this.startDate, this.endDate);
-            }
-        }*/
 
+            this.checkIfQueue = false;
+            this.fetchAndFill(this.dropDownValue, this.startDate, this.endDate);
+        }
 
+    }
+
+    checkDate(dateStart: Date, dateEnd: Date) {
+        if (dateStart.getTime() > dateEnd.getTime()) {
+            return true;
+        }
     }
 
     // Function that using the dateStart and dateEnd set a range
@@ -140,18 +147,18 @@ export class AppComponent implements OnInit {
     // is inside the range, adding it on a mock array
     // at the end it will overwrite the original array with the new one
     filterForDate(dateStart: Date, dateEnd: Date): void {
+
         let mockArray: Project[] = [];
 
-        if (dateStart && dateEnd == undefined) {
+        if (dateStart && !dateEnd) {
             console.log("DateStart available: ", dateStart.getTime());
             this.projectArray.forEach(item => {
                 if (item.created_at.getTime() >= dateStart.getTime()) {
-                    console.log("item.created_at: ", item.created_at.getTime());
                     mockArray.push(item);
                 }
             });
 
-        } else if (dateEnd && dateStart == undefined) {
+        } else if (dateEnd && !dateStart) {
             console.log("DateEnd available: ", dateEnd.getTime());
             this.projectArray.forEach(item => {
                 if (item.last_activity_at.getTime() <= dateEnd.getTime()) {
@@ -161,21 +168,14 @@ export class AppComponent implements OnInit {
 
         } else if (dateStart && dateEnd) {
             console.log("DateStart available: ", dateStart.getTime(), "DateEnd vailable: ", dateEnd.getTime());
-            if (dateEnd.getTime() >= dateStart.getTime()) {
-                this.projectArray.forEach(item => {
-                    if (item.created_at.getTime() >= dateStart.getTime() &&
-                        item.last_activity_at.getTime() <= dateEnd.getTime()) {
-                        mockArray.push(item);
-                    }
-                });
+            this.projectArray.forEach(item => {
+                if (item.created_at.getTime() >= dateStart.getTime() &&
+                    item.last_activity_at.getTime() <= dateEnd.getTime()) {
+                    mockArray.push(item);
+                }
+            });
 
-            }
-            else {
-                this.errNumber = -3;    // DateEND < DateSTART
-                this.isError = true;
-                return;
-            }
-        } else if (dateStart == undefined && dateEnd == undefined) {
+        } else if (!dateStart && !dateEnd) {
             console.log("Both DateStart and DateEnd undefined");
             return;
         }
@@ -211,6 +211,7 @@ export class AppComponent implements OnInit {
                 this.busy = Rx.Observable.forkJoin(obsArray)
                     .subscribe()
                 console.log("Fetch of Issues DONE");
+                this.checkIfQueue = true;
             },
             Error => {
                 console.log("Error (Projects) ", Error);
@@ -237,12 +238,17 @@ export class AppComponent implements OnInit {
         });
     }
 
+    public baseUrl: string = "https://git.loccioni.com/";
     // Title pretty self explanatory
     // This function will calculate the whether an Issue is out
     // of the Time Estimated range
     checkIssueOutOfTime(project: Project): void {
+
         project.pjIssues.forEach(issue => {
             if (issue.time_estimate < ((issue.total_time_spent * 0.9) - 3600)) {
+                issue.html_link = this.baseUrl + this.dropDownValue + "/" +
+                    project.name + "/issues/" + issue.iid;
+                // console.log(issue.html_link);
                 project.timeOut += 1;
                 project.timeOutIssue.push(issue);
             }
