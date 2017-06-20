@@ -13,7 +13,7 @@
 </kendo-dialog>
 
 <div id="app-header">
-    <h1 id="app-title"> Time Tracking </h1>
+    <h1 id="app-title"> Loccioni / Time Tracking </h1>
 </div>
 
 <div id="app-toolbar">
@@ -38,14 +38,14 @@
     </div>
 
     <div class="app-route">
-        <button class="btn-" id="app-button-table" kendoButton (click)="toggleTable()" [primary]="true"> Table </button>
-        <button class="btn-" id="app-button-graphs" (click)="toggleGraphs()" kendoButton> Graphs </button>
+        <button class="btn-" id="app-button-table" kendoButton (click)="toggleTable()" [primary]="table"> Table </button>
+        <button class="btn-" id="app-button-graphs" (click)="toggleGraphs()" kendoButton [primary]="graph"> Graphs </button>
     </div>
 
 </div>
 <br>
 
-<div class="body-table" [hidden]="isTable()">
+<div class="body-table" [hidden]="!isTable()">
     <kendo-grid [data]="gridData" [pageSize]="state.take" [skip]="state.skip" [sort]="state.sort" [sortable]="true" [pageable]="true"
         (dataStateChange)="dataStateChange($event)" [filterable]="true">
 
@@ -93,7 +93,7 @@
                 <table>
                     <tr>
                         <td>
-                            <p id="grid-detail" style="margin-left: 1em"><strong>Name:</strong><a href="item.html_link" (click)="newWindow(item.html_link)" target="_blank"> {{item.title}}</a></p>
+                            <p id="grid-detail" style="margin-left: 1em"><strong>Name:</strong><a href="item.html_link" (click)="newWindow(item.html_link)" target="_blank"> {{item.title}} </a></p>
                         </td>
                         <td>
                             <p id="grid-detail"><strong>State:</strong> {{item.state}}</p>
@@ -114,14 +114,11 @@
     </kendo-grid>
 </div>
 
-<div class="body-graph" [hidden]="isGraph()">
-    <kendo-chart [categoryAxis]="{ categories: categories }">
-        <kendo-chart-title text="Gross domestic product growth /GDP annual %/"></kendo-chart-title>
-        <kendo-chart-legend position="bottom" orientation="horizontal"></kendo-chart-legend>
-        <kendo-chart-tooltip format="{0}%"></kendo-chart-tooltip>
-        <kendo-chart-series>
-            <kendo-chart-series-item *ngFor="let item of projectArray" type="line" [data]="item.timeOut" [name]="item.name">
+<div class="body-graph" [hidden]="!isGraph()">
+    <kendo-chart [transitions]="false">
+          <kendo-chart-series>
+            <kendo-chart-series-item [data]="seriesData">
             </kendo-chart-series-item>
-        </kendo-chart-series>
-    </kendo-chart>
+          </kendo-chart-series>
+        </kendo-chart>
 </div>

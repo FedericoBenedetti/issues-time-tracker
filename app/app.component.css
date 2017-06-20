@@ -3,9 +3,9 @@
 }
 
 #app-title{
-    padding-top: 0.8em;
+    padding-top: 0.7em;
     height: 2.5em;
-    text-align: center;
+    margin-left: 0.3em;
     border-bottom: thin solid #e5e5e5;
 }
 

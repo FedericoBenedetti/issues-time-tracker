@@ -6,13 +6,14 @@ import {
     GridComponent, GridDataResult,
     PageChangeEvent, DataStateChangeEvent
 } from "@progress/kendo-angular-grid";
-import { process, State } from "@progress/kendo-data-query";
+import { process, State, groupBy, GroupResult } from "@progress/kendo-data-query";
 
 import * as Rx from "rxjs/Rx";
 
 import { Project } from "./project";
 import { Issue } from "./issue";
 import { Group } from "./group";
+import { MockTableData } from "./mocktabledata";
 
 import { HttpService } from "./http.service";
 
@@ -33,13 +34,26 @@ export class AppComponent implements OnInit {
     public projectArray: Project[] = [];
 
     // Show or Hide the Table/Graphs div
-    public table: boolean = false;
-    public graph: boolean = true;
+    public table: boolean = true;
+    public graph: boolean = false;
+
     public isGraph(): boolean {
         return this.graph;
     }
     public isTable(): boolean {
         return this.table;
+    }
+
+    // Toggling function for switching between
+    // table and graphs
+    toggleTable(): void {
+        this.table = true;
+        this.graph = false;
+    }
+
+    toggleGraphs(): void {
+        this.graph = true;
+        this.table = false;
     }
 
     // DialogBox
@@ -112,6 +126,8 @@ export class AppComponent implements OnInit {
     // that i want to fetch Projects and Issues
     public valueChange(value: string): void {
         console.log("Selected Group: ", value);
+        this.startDate = null;
+        this.endDate = null;
         this.dropDownValue = value;
         return;
     }
@@ -130,6 +146,9 @@ export class AppComponent implements OnInit {
     // function that check the the possible combination with endDate, startDate and comboBoxValue
     // if everything is undefined it wont start the fetch
     checkAndStart(): void {
+        this.monthsArray = [];
+        this.counterArray = [];
+        this.projectArray = [];
         if (this.checkIfQueue == true) {
             if (this.startDate && this.endDate) {
                 if (this.checkDate(this.startDate, this.endDate)) {
@@ -138,12 +157,12 @@ export class AppComponent implements OnInit {
                     return;
                 }
             }
-
             this.checkIfQueue = false;
             this.fetchAndFill(this.dropDownValue, this.startDate, this.endDate);
         }
 
     }
+
 
     checkDate(dateStart: Date, dateEnd: Date) {
         if (dateStart.getTime() > dateEnd.getTime()) {
@@ -159,6 +178,8 @@ export class AppComponent implements OnInit {
     filterForDate(dateStart: Date, dateEnd: Date): void {
 
         let mockArray: Project[] = [];
+
+
 
         if (dateStart && !dateEnd) {
             console.log("DateStart available: ", dateStart.getTime());
@@ -177,7 +198,7 @@ export class AppComponent implements OnInit {
             });
 
         } else if (dateStart && dateEnd) {
-            console.log("DateStart available: ", dateStart.getTime(), "DateEnd vailable: ", dateEnd.getTime());
+            console.log("DateStart available: ", dateStart.getTime(), "DateEnd available: ", dateEnd.getTime());
             this.projectArray.forEach(item => {
                 if (item.created_at.getTime() >= dateStart.getTime() &&
                     item.last_activity_at.getTime() <= dateEnd.getTime()) {
@@ -211,17 +232,18 @@ export class AppComponent implements OnInit {
                     let innerObservable = this.restService.retrieveIssues(item.id)
                         .do(((issues: Issue[]) => {
                             item.pjIssues = issues;
-                            this.checkIssueOutOfTime(item);
-                            this.calcData(item);
                         }));
                     obsArray.push(innerObservable);
 
                 });
                 this.busy = Rx.Observable.forkJoin(obsArray)
                     .subscribe(() => {
+                        this.calcData();
+                        this.checkIssueOutOfTime();
                         this.gridData = process(this.projectArray, this.state);
+                        this.convertToTable();
+                        console.log("Fetch of Issues DONE");
                     });
-                console.log("Fetch of Issues DONE");
                 this.checkIfQueue = true;
             },
             Error => {
@@ -231,39 +253,98 @@ export class AppComponent implements OnInit {
             });
     }
 
+    public monthsArray: string[] = [];
+    public counterArray: number[] = [];
+
+    public convertToTable(): void {
+        this.createMinMaxArray();
+
+        let min = Math.min(...this.minMaxArray);
+        let max = Math.max(...this.minMaxArray);
+
+        let mockMonths: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let delta = (max - min) + 1;
+
+        let j = 0;    // objArray counter
+        let k = 0;    // Months counter
+
+        for (let i = 0; i < delta; i++) {
+            let realYear = min + i;
+            for (let k = 0; k < mockMonths.length; k++) {
+                if (!this.counterArray[k]) {
+                    this.counterArray[k] = 0;
+                }
+                if (realYear == this.objArray[j].year) {
+                    for (let o = 0; o < this.objArray.length; o ++) {
+                        if (mockMonths[k] === this.objArray[o].month) {
+                            this.counterArray[k] += 1;
+                        }
+                    }
+                }
+                this.monthsArray.push(mockMonths[k] + " " + realYear);
+            }
+
+        }
+
+        console.log("MonthsArray: ", this.monthsArray, " CounterArray: ", this.counterArray);
+    }
+
+    public minMaxArray: number[] = [];
+    public createMinMaxArray(): void {
+        for (let i = 0; i < this.projectArray.length; i++) {
+            this.minMaxArray.push(this.projectArray[i].created_at.getFullYear());
+        }
+    }
+
     // Function to calculate the Time Estimated for each Issue
     // & which one is Active or Closed
-    calcData(project: Project): void {
-        project.pjIssues.forEach(issue => {
-            project.totalTimeEstimated += issue.time_estimate;
-            project.totalTimeSpent += issue.total_time_spent;
-        });
+    calcData(): void {
+        this.projectArray.forEach(project => {
+            project.pjIssues.forEach(issue => {
+                project.totalTimeEstimated += issue.time_estimate;
+                project.totalTimeSpent += issue.total_time_spent;
+            });
 
-        this.timeSpent(project);
-        project.pjIssues.forEach(issue => {
-            if (issue.state === "opened") {
-                project.nActive += 1;
-            } else {
-                project.nClosed += 1;
-            }
-        });
+            this.timeSpent(project);
+            project.pjIssues.forEach(issue => {
+                if (issue.state === "opened") {
+                    project.nActive += 1;
+                } else {
+                    project.nClosed += 1;
+                }
+            });
+        })
+
     }
 
     public baseUrl: string = "https://git.loccioni.com/";
     // Title pretty self explanatory
     // This function will calculate the whether an Issue is out
     // of the Time Estimated range
-    checkIssueOutOfTime(project: Project): void {
 
-        project.pjIssues.forEach(issue => {
-            if (issue.time_estimate < ((issue.total_time_spent * 0.9) - 3600)) {
-                issue.html_link = this.baseUrl + this.dropDownValue + "/" +
-                    project.name + "/issues/" + issue.iid + "?private_token=ij7kczXd7fGz2dyJxT5Y";
-                // console.log(issue.html_link);
-                project.timeOut += 1;
-                project.timeOutIssue.push(issue);
-            }
-        });
+    checkIssueOutOfTime(): void {
+        this.projectArray.forEach(project => {
+            project.pjIssues.forEach(issue => {
+                if (issue.time_estimate < ((issue.total_time_spent * 0.9) - 3600)) {
+                    issue.html_link = this.baseUrl + this.dropDownValue + "/" +
+                        project.name + "/issues/" + issue.iid + "?private_token=ij7kczXd7fGz2dyJxT5Y";
+                    this.handleGraphs(issue);
+                    project.timeOut += 1;
+                    project.timeOutIssue.push(issue);
+                }
+            });
+        })
+
+    }
+
+    public objArray: MockTableData[] = [];
+    public handleGraphs(issue: Issue): void {
+        let obj: MockTableData = new MockTableData;
+
+        obj.year = issue.created_at.getFullYear();
+        obj.month = issue.created_at.toLocaleString("en-us", { month: "long" });
+        this.objArray.push(obj);
+        console.log(this.objArray);
     }
 
     newWindow(htmlLink: string): void {
@@ -280,17 +361,5 @@ export class AppComponent implements OnInit {
     // needed to apply "+" near each row of the table
     checkLength(dataItem: Project): boolean {
         return dataItem.timeOutIssue.length > 0;
-    }
-
-    // Toggling function for switching between
-    // table and graphs
-    toggleTable(): void {
-        this.table = false;
-        this.graph = true;
-    }
-
-    toggleGraphs(): void {
-        this.graph = false;
-        this.table = true;
     }
 }
