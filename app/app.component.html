@@ -59,7 +59,7 @@
                 </kendo-grid-string-filter-cell>
             </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="nActive" title="Opened Issue">
+        <kendo-grid-column field="nCreated" title="Opened Issue">
             <ng-template kendoGridFilterCellTemplate>
             </ng-template>
         </kendo-grid-column>
@@ -74,7 +74,7 @@
                 {{dataItem.timeOut}}
             </ng-template>
         </kendo-grid-column>
-        <kendo-grid-column field="timeEstimated" title="Time Estimated">
+        <!-- <kendo-grid-column field="timeEstimated" title="Time Estimated">
             <ng-template kendoGridFilterCellTemplate>
             </ng-template>
             <ng-template kendoGridCellTemplate let-dataItem>
@@ -87,7 +87,7 @@
             <ng-template kendoGridCellTemplate let-dataItem>
                 {{dataItem.timeSpent.h}} h
             </ng-template>
-        </kendo-grid-column>
+        </kendo-grid-column> -->
         <ng-template kendoGridDetailTemplate let-dataItem [kendoGridDetailTemplateShowIf]="checkLength">
             <div *ngFor="let item of dataItem.timeOutIssue">
                 <table>
@@ -115,9 +115,16 @@
 </div>
 
 <div class="body-graph" [hidden]="!isGraph()">
-    <kendo-chart [transitions]="false">
+    <kendo-chart>
+        <kendo-chart-series>
+            <kendo-chart-series-item type="column" [data]="seriesData" field="count" categoryField="monthAndYear">
+            </kendo-chart-series-item>
+        </kendo-chart-series>
+    </kendo-chart>
+
+    <kendo-chart>
           <kendo-chart-series>
-            <kendo-chart-series-item [data]="seriesData">
+            <kendo-chart-series-item type="bubble" [data]="seriesData" field="count" categoryField="monthAndYear">
             </kendo-chart-series-item>
           </kendo-chart-series>
         </kendo-chart>

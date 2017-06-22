@@ -6,7 +6,7 @@ export class Project {
     public name?: string;
     public pjIssues?: Issue[] = [];
     public timeOutIssue?: Issue[] = [];
-    public nActive?: number = 0;
+    public nCreated?: number = 0;
     public nClosed?: number = 0;
     public totalTimeEstimated? = 0;
     public totalTimeSpent? = 0;
@@ -15,4 +15,5 @@ export class Project {
     public timeOut: number = 0;
     public created_at: Date;
     public last_activity_at: Date;
+    public closedFilteredIssue?: Issue[] = [];
 }

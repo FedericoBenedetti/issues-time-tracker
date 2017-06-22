@@ -30,7 +30,7 @@ export class HttpService {
             .concatMap(Group => {
                 let observableArray = [];
                 let totalGrps: Group[] = [];
-                for (let i = 1; i <= pages; i ++) {
+                for (let i = 1; i <= pages; i++) {
                     let groupUrl: string = this.projectBaseUrl + "groups?page=" + i
                         + "&per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y";
                     let innerObsGroupArray = this.http.get(groupUrl)
@@ -70,7 +70,7 @@ export class HttpService {
             }).concatMap(Project => {
                 let observableArray = [Rx.Observable.of({})];
                 let totalPjs: Project[] = [];
-                for (let i = 1; i <= pages; i ++) {
+                for (let i = 1; i <= pages; i++) {
                     let innerObsArray = this.http.get(urlForFetch + "projects?page=" + i
                         + "&per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y")
                         .map((res: Response) => {
@@ -102,14 +102,19 @@ export class HttpService {
             }).concatMap(Issue => {
                 let obsIssuesArray = [Rx.Observable.of({})];
                 let loadedIssues: Issue[] = [];
-                for (let i = 1; i <= pages; i ++) {
+                for (let i = 1; i <= pages; i++) {
+                    let projectIssueUrl: string = this.projectBaseUrl + "projects/" +
+                        id + "/issues?page=" + i + "&per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y";
+
+
                     let innerIssArray = this.http.get(projectIssueUrl)
                         .map((res: Response) => {
                             let IssueDTOs: DTO.IIssueDTO[] = res.json();
                             return Mapper.isDTOtoIs(IssueDTOs);
                         })
                         .concatMap(issues => {
-                            let obsArray = [];
+                            let obsArray = [Rx.Observable.of({})];
+
 
                             issues.forEach(issue => {
                                 let projectIssueUrl: string = this.projectBaseUrl + "projects/" +
@@ -120,7 +125,7 @@ export class HttpService {
                                         return Mapper.addTimeTracking(issue, issueTimeStatsDTO);
                                     });
 
-                                obsArray.push(innerObs);
+                                obsArray.push(<any>innerObs);
 
                             });
                             return Rx.Observable.forkJoin(obsArray)

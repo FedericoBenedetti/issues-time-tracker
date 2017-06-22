@@ -44,6 +44,7 @@ export class Mapper {
             newIssue.iid = item.iid;
             newIssue.title = item.title;
             newIssue.created_at = new Date(item.created_at);
+            newIssue.updated_at = new Date(item.updated_at);
             issueArray.push(newIssue);
         });
 

@@ -14,6 +14,7 @@ export interface IIssueDTO {
     iid: number;
     title?: string;
     created_at?: Date;
+    updated_at?: Date;
 }
 
 export interface ITimeTrackingDTO {

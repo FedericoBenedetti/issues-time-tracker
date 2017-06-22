@@ -1,0 +1,3 @@
+.editorToolbarWindow.k-header.k-window-content, .k-calendar .k-calendar-monthview thead, .k-calendar .k-content th, .k-calendar .k-header, .k-grid-footer, .k-grid-header, .k-grid-pager, .k-group-cell, .k-grouping-header, .k-grouping-row, .k-pager-wrap, .k-scheduler-footer, .k-scheduler-toolbar, .k-spreadsheet-column-header, .k-spreadsheet-row-header, .k-spreadsheet-top-corner, .k-treemap .k-treemap-title {
+    background-color: white !important;
+}
