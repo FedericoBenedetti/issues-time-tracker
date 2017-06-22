@@ -116,16 +116,15 @@
 
 <div class="body-graph" [hidden]="!isGraph()">
     <kendo-chart>
+        <kendo-chart-category-axis>
+            <kendo-chart-category-axis-item-labels rotation="35">
+            </kendo-chart-category-axis-item-labels>
+            <kendo-chart-category-axis-item [categories]="seriesData?.monthAndYear">
+            </kendo-chart-category-axis-item>
+        </kendo-chart-category-axis>
         <kendo-chart-series>
-            <kendo-chart-series-item type="column" [data]="seriesData" field="count" categoryField="monthAndYear">
+            <kendo-chart-series-item [data]="seriesData?.count">
             </kendo-chart-series-item>
         </kendo-chart-series>
     </kendo-chart>
-
-    <kendo-chart>
-          <kendo-chart-series>
-            <kendo-chart-series-item type="bubble" [data]="seriesData" field="count" categoryField="monthAndYear">
-            </kendo-chart-series-item>
-          </kendo-chart-series>
-        </kendo-chart>
 </div>

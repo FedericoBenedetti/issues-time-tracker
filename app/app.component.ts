@@ -85,13 +85,14 @@ export class AppComponent implements OnInit {
     public endDate: Date;
 
     public onChangeStart(value: Date): void {
-        console.log("onChangeStart: ", value.getMonth(),value.getDay(),value.getFullYear());
-        this.startDate = new Date(value);
+        console.log("onChangeStart: ", value.getMonth(), value.getDay(), value.getFullYear());
+        this.startDate = value;
     }
 
     public onChangeEnd(value: Date): void {
-        console.log("onChangeEnd: ", value.getMonth(),value.getDay(),value.getFullYear());
-        this.endDate = new Date(value);
+        console.log("onChangeEnd: ", value.getMonth(), value.getDay(), value.getFullYear());
+        this.endDate = value;
+        this.endDate.setHours(23, 59, 59, 59);
     }
     // End of DatePicker (Kendo)
 
@@ -247,6 +248,7 @@ export class AppComponent implements OnInit {
                         this.calcData();
                         this.checkIssueOutOfTime();
                         this.convertToTable();
+                        this.spliceArray();
                         this.gridData = process(this.projectArray, this.state);
                         console.log("Fetch of Issues DONE");
                     });
@@ -259,6 +261,25 @@ export class AppComponent implements OnInit {
             });
     }
 
+    public spliceArray(): void {
+        let indexOfFirstGreaterThanZero = this.seriesData.count.findIndex(x => { return x > 0});
+
+        this.seriesData.count.splice(0, indexOfFirstGreaterThanZero);
+        this.seriesData.monthAndYear.splice(0, indexOfFirstGreaterThanZero);
+
+        let indexOfLastGreaterThanZero = 0;
+
+        for (let i = 0; i < this.seriesData.count.length; i++) {
+            if (this.seriesData.count[i] > 0) {
+                indexOfLastGreaterThanZero = i;
+            }
+        }
+
+        this.seriesData.count.splice(indexOfLastGreaterThanZero + 1);
+        this.seriesData.monthAndYear.splice(indexOfLastGreaterThanZero + 1);
+    }
+
+
     public convertToTable(): void {
         this.createMinMaxArray();
 
@@ -266,29 +287,18 @@ export class AppComponent implements OnInit {
         let max = Math.max(...this.minMaxArray);
 
         let mockMonths: string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        let delta = (max - min) + 1;
 
-        console.log("Min: ", min, " Max: ", max, " Delta: ", delta);
+        console.log("Min: ", min, " Max: ", max);
 
         let savePos: number = 0;
 
-        let j = 0;    // objArray counter
-
-        for (let i = 0; i < delta; i++) {
-            let realYear = min + i;
-            for (let k = 0; k < mockMonths.length; k++) {
-                this.seriesData.count[savePos] = 0;
-                if (realYear == this.objArray[j].year) {
-                    for (let o = 0; o < this.objArray.length; o++) {
-                        if (mockMonths[k] === this.objArray[o].month) {
-                            this.seriesData.count[savePos] += 1;
-                        }
-                    }
-                }
+        for (let y = min; y <= max; y ++) {
+            for (let j = 0; j < mockMonths.length; j ++) {
+                let perMonthNofIssue = this.objArray.filter(iss => (iss.month === mockMonths[j] && iss.year === y)).length;
+                this.seriesData.count[savePos] = perMonthNofIssue;
+                this.seriesData.monthAndYear[savePos] = mockMonths[j] + " " + y;
                 savePos += 1;
-                this.seriesData.monthAndYear.push(mockMonths[k] + " " + realYear);
             }
-
         }
 
         console.log("MonthsArray: ", this.seriesData.monthAndYear, " CounterArray: ", this.seriesData.count);
@@ -296,10 +306,8 @@ export class AppComponent implements OnInit {
 
     public minMaxArray: number[] = [];
     public createMinMaxArray(): void {
-        for (let i = 0; i < this.projectArray.length; i++) {
-            for (let k = 0; k < this.projectArray[i].pjIssues.length; k++) {
-                this.minMaxArray.push(this.projectArray[i].pjIssues[k].created_at.getFullYear());
-            }
+        for (let i = 0; i < this.objArray.length; i++) {
+            this.minMaxArray[i] = this.objArray[i].year;
         }
     }
 
@@ -315,21 +323,22 @@ export class AppComponent implements OnInit {
             this.timeSpent(project);
             project.pjIssues.forEach(issue => {
 
-                if (typeof this.endDate === "undefined")  {
+                if (typeof this.endDate === "undefined") {
                     console.log("EndDate undefined");
                     this.endDate = new Date();
+                    this.endDate.setHours(23, 59, 59, 59);
                 }
 
                 if (typeof this.startDate === "undefined") {
                     console.log("StartDate undefined");
-                    this.startDate = new Date(1970,0);
+                    this.startDate = new Date(1970, 0);
                 }
 
                 if (issue.created_at.getTime() >= this.startDate.getTime() && issue.created_at.getTime() <= this.endDate.getTime()) {
-                     project.nCreated += 1;
+                    project.nCreated += 1;
                 }
 
-                if ( (issue.state === "closed") && (issue.updated_at.getTime() >= this.startDate.getTime()) && (issue.updated_at.getTime() <= this.endDate.getTime())) {
+                if ((issue.state === "closed") && (issue.updated_at.getTime() >= this.startDate.getTime()) && (issue.updated_at.getTime() <= this.endDate.getTime())) {
                     project.nClosed += 1;
                     project.closedFilteredIssue.push(issue);
                 }
@@ -361,16 +370,18 @@ export class AppComponent implements OnInit {
     public objArray: MockTableData[] = [];
 
     public handleGraphs(issue: Issue): void {
+        let locale = "en-us";
         let obj: MockTableData = new MockTableData;
 
-        obj.year = issue.created_at.getFullYear();
-        obj.month = issue.created_at.toLocaleString("en-us", { month: "long" });
-        console.log("Obj.Month: ", obj.month);
+        obj.year = issue.created_at.getUTCFullYear();
+        obj.month = issue.created_at.toLocaleString(locale, { month: "long" });
+        obj.iid = issue.iid;
+        console.log("Obj.year: ", obj.year);
         this.objArray.push(obj);
     }
 
     newWindow(htmlLink: string): void {
-        open(htmlLink, 'Chrome');
+        open(htmlLink);
     }
 
     // Parsing from second to hour
