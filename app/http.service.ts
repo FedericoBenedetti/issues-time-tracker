@@ -28,7 +28,7 @@ export class HttpService {
                 return res.json();
             })
             .concatMap(Group => {
-                let observableArray = [];
+                let observableArray = [Rx.Observable.of({})];
                 let totalGrps: Group[] = [];
                 for (let i = 1; i <= pages; i++) {
                     let groupUrl: string = this.projectBaseUrl + "groups?page=" + i
@@ -87,8 +87,61 @@ export class HttpService {
             });
     }
 
+    retrieveTimeStats(id: number, issue: Issue): Rx.Observable<void> {
+        let projectIssueUrl: string = this.projectBaseUrl + "projects/" +
+            id + "/issues/" + issue.iid + "/time_stats?private_token=ij7kczXd7fGz2dyJxT5Y";
+
+        return this.http
+            .get(projectIssueUrl)
+            .map((res: Response) => {
+                let ITimeTrackingDTO: DTO.ITimeTrackingDTO[] = res.json();
+                return Mapper.addTimeTracking(issue, ITimeTrackingDTO);
+            });
+
+    }
+
     retrieveIssues(id: number): Rx.Observable<Issue[]> {
         let projectIssueUrl: string = this.projectBaseUrl + "projects/" +
+            id + "/issues?per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y";
+        let pages: number;
+        return this.http
+            .get(projectIssueUrl)
+            .do((res: Response) => {
+                pages = parseInt(res.headers.get("X-Total-Pages"));
+                console.log("Number of Pages (Groups): ", pages);
+            })
+            .map((res: Response) => {
+                return res.json();
+            })
+            .concatMap(Issue => {
+                let observableArray = [Rx.Observable.of({})];
+                let totalIssues: Issue[] = [];
+                for (let i = 1; i <= pages; i++) {
+                    let projectIssueUrlSecond: string = this.projectBaseUrl + "projects/" +
+                        id + "/issues?page=" + i + "&per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y";
+                    let innerObsIssArray = this.http.get(projectIssueUrlSecond)
+                        .map((res: Response) => {
+                            let IssueDTOs: DTO.IIssueDTO[] = res.json();
+                            return Mapper.isDTOtoIs(IssueDTOs);
+
+                        })
+                        .do(isss => (isss.forEach(iss => {
+                            totalIssues.push(iss);
+                        })));
+                    observableArray.push(innerObsIssArray);
+                }
+
+                return Rx.Observable.forkJoin(observableArray)
+                    .map(() => totalIssues);
+
+            })
+
+    }
+
+}
+
+
+        /* let projectIssueUrl: string = this.projectBaseUrl + "projects/" +
             id + "/issues?per_page=100&private_token=ij7kczXd7fGz2dyJxT5Y";
         let pages: number;
 
@@ -142,5 +195,5 @@ export class HttpService {
                     .map(() => loadedIssues);
 
             });
-    }
-}
+    }*/
+

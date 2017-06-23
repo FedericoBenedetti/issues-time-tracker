@@ -34,18 +34,18 @@
     </div>
 
     <div class="app- btn-" id="app-button-fetch">
-        <button kendoButton [disabled]="!isCheckIfQueue()" (click)="checkAndStart()" [primary]="true"> Fetch </button>
+        <button kendoButton (click)="checkAndStart()" [primary]="true"> Fetch </button>
     </div>
 
     <div class="app-route">
-        <button class="btn-" id="app-button-table" kendoButton (click)="toggleTable()" [primary]="table"> Table </button>
-        <button class="btn-" id="app-button-graphs" (click)="toggleGraphs()" kendoButton [primary]="graph"> Graphs </button>
+        <button class="btn-" id="app-button-table" kendoButton (click)="toggleTable()" [primary]="toggle"> Table </button>
+        <button class="btn-" id="app-button-graphs" (click)="toggleGraph()" kendoButton [primary]="!toggle"> Graphs </button>
     </div>
 
 </div>
 <br>
 
-<div class="body-table" [hidden]="!isTable()">
+<div class="body-table" *ngIf="toggle">
     <kendo-grid [data]="gridData" [pageSize]="state.take" [skip]="state.skip" [sort]="state.sort" [sortable]="true" [pageable]="true"
         (dataStateChange)="dataStateChange($event)" [filterable]="true">
 
@@ -114,7 +114,7 @@
     </kendo-grid>
 </div>
 
-<div class="body-graph" [hidden]="!isGraph()">
+<div class="body-graph" *ngIf="!toggle">
     <kendo-chart>
         <kendo-chart-category-axis>
             <kendo-chart-category-axis-item-labels rotation="35">
@@ -123,8 +123,13 @@
             </kendo-chart-category-axis-item>
         </kendo-chart-category-axis>
         <kendo-chart-series>
-            <kendo-chart-series-item [data]="seriesData?.count">
+            <kendo-chart-series-item [data]="seriesData?.count" type="line" name="Issues Out Of Time">
+            </kendo-chart-series-item>
+            <kendo-chart-series-item [data]="seriesData?.count2" type="line" name="Issues Closed">
             </kendo-chart-series-item>
         </kendo-chart-series>
+        <kendo-grid-pdf fileName="Products.pdf" [allPages]="true">
+            <kendo-grid-pdf-margin top="1cm" left="1cm" right="1cm" bottom="1cm"></kendo-grid-pdf-margin>
+        </kendo-grid-pdf>
     </kendo-chart>
 </div>

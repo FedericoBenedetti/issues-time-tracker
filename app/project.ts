@@ -8,8 +8,8 @@ export class Project {
     public timeOutIssue?: Issue[] = [];
     public nCreated?: number = 0;
     public nClosed?: number = 0;
-    public totalTimeEstimated? = 0;
-    public totalTimeSpent? = 0;
+    public totalTimeEstimated?= 0;
+    public totalTimeSpent?= 0;
     public timeEstimated: Data = new Data;
     public timeSpent: Data = new Data;
     public timeOut: number = 0;

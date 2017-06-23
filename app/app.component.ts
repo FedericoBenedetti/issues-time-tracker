@@ -35,26 +35,14 @@ export class AppComponent implements OnInit {
     public projectArray: Project[] = [];
 
     // Show or Hide the Table/Graphs div
-    public table: boolean = true;
-    public graph: boolean = false;
+    public toggle: boolean = true;
 
-    public isGraph(): boolean {
-        return this.graph;
-    }
-    public isTable(): boolean {
-        return this.table;
+    public toggleTable(): void {
+        this.toggle = true;
     }
 
-    // Toggling function for switching between
-    // table and graphs
-    toggleTable(): void {
-        this.table = true;
-        this.graph = false;
-    }
-
-    toggleGraphs(): void {
-        this.graph = true;
-        this.table = false;
+    public toggleGraph(): void {
+        this.toggle = false;
     }
 
     // DialogBox
@@ -137,36 +125,15 @@ export class AppComponent implements OnInit {
     // DropDown (Kendo)
     public dropDownValue: string;
 
-    // this variable will prevent the program to
-    // queue multiple fetch, allowing only once per time
-    public checkIfQueue: boolean = true;
-
-    public isCheckIfQueue(): boolean {
-        return this.checkIfQueue;
-    }
-
     public seriesData: Model = new Model();
     // function that check the the possible combination with endDate, startDate and comboBoxValue
     // if everything is undefined it wont start the fetch
     checkAndStart(): void {
         this.projectArray = [];
-        this.seriesData.count = [];
-        this.seriesData.monthAndYear = [];
+        this.seriesData = new Model();
         this.objArray = [];
-        console.log("count: ", this.seriesData.count);
-        console.log("m and y: ", this.seriesData.monthAndYear);
 
-        if (this.checkIfQueue == true) {
-            if (this.startDate && this.endDate) {
-                if (this.checkDate(this.startDate, this.endDate)) {
-                    this.errNumber = -3;    // DateEND < DateSTART
-                    this.isError = true;
-                    return;
-                }
-            }
-            this.checkIfQueue = false;
-            this.fetchAndFill(this.dropDownValue, this.startDate, this.endDate);
-        }
+        this.fetchAndFill(this.dropDownValue, this.startDate, this.endDate);
 
     }
 
@@ -235,39 +202,53 @@ export class AppComponent implements OnInit {
                 console.log("Projects Dimension: ", this.projectArray.length);
                 this.gridData = process(this.projectArray, this.state);
                 let obsArray = [Rx.Observable.of({})];
+                let obsArrayFilteredIssue = [Rx.Observable.of(void {})];
                 this.projectArray.forEach(item => {
                     let innerObservable = this.restService.retrieveIssues(item.id)
-                        .do(((issues: Issue[]) => {
-                            item.pjIssues = issues;
-                        }));
+                        .do((issueArray: Issue[]) => {
+                            item.pjIssues = issueArray;
+                            this.calcData(item);
+                        });
                     obsArray.push(innerObservable);
-
                 });
+
                 this.busy = Rx.Observable.forkJoin(obsArray)
-                    .subscribe(() => {
-                        this.calcData();
+                    .concatMap(data => {
+                        this.projectArray.forEach(item => {
+                            item.closedFilteredIssue.forEach(closedIssue => {
+                                let innerObservableFilteredIssue = this.restService.retrieveTimeStats(item.id, closedIssue)
+                                obsArrayFilteredIssue.push(innerObservableFilteredIssue);
+                            });
+                        });
+                        return Rx.Observable.forkJoin(obsArrayFilteredIssue)
+                    }).subscribe(() => {
                         this.checkIssueOutOfTime();
                         this.convertToTable();
                         this.spliceArray();
                         this.gridData = process(this.projectArray, this.state);
                         console.log("Fetch of Issues DONE");
                     });
-                this.checkIfQueue = true;
             },
             Error => {
                 console.log("Error (Projects) ", Error);
                 this.errNumber = Error.status;
                 this.isError = true;
+
             });
     }
 
     public spliceArray(): void {
-        let indexOfFirstGreaterThanZero = this.seriesData.count.findIndex(x => { return x > 0});
+        let indexOfFirstGreaterThanZero = this.seriesData.count.findIndex(x => { return x > 0 });
+        let indexOfFirstGreaterThanZero2 = this.seriesData.count2.findIndex(x => { return x > 0 });
 
-        this.seriesData.count.splice(0, indexOfFirstGreaterThanZero);
-        this.seriesData.monthAndYear.splice(0, indexOfFirstGreaterThanZero);
+        let min = Math.min(indexOfFirstGreaterThanZero, indexOfFirstGreaterThanZero2);
+
+        this.seriesData.count.splice(0, min);
+        this.seriesData.monthAndYear.splice(0, min);
+        this.seriesData.count2.splice(0, min);
 
         let indexOfLastGreaterThanZero = 0;
+        let indexOfLastGreaterThanZero2 = 0;
 
         for (let i = 0; i < this.seriesData.count.length; i++) {
             if (this.seriesData.count[i] > 0) {
@@ -275,8 +256,17 @@ export class AppComponent implements OnInit {
             }
         }
 
-        this.seriesData.count.splice(indexOfLastGreaterThanZero + 1);
-        this.seriesData.monthAndYear.splice(indexOfLastGreaterThanZero + 1);
+        for (let i = 0; i < this.seriesData.count2.length; i++) {
+            if (this.seriesData.count2[i] > 0) {
+                indexOfLastGreaterThanZero2 = i;
+            }
+        }
+
+        let max = Math.max(indexOfLastGreaterThanZero, indexOfLastGreaterThanZero2);
+
+        this.seriesData.count.splice(max + 1);
+        this.seriesData.monthAndYear.splice(max + 1);
+        this.seriesData.count2.splice(max + 1);
     }
 
 
@@ -292,11 +282,14 @@ export class AppComponent implements OnInit {
 
         let savePos: number = 0;
 
-        for (let y = min; y <= max; y ++) {
-            for (let j = 0; j < mockMonths.length; j ++) {
+        for (let y = min; y <= max; y++) {
+            for (let j = 0; j < mockMonths.length; j++) {
                 let perMonthNofIssue = this.objArray.filter(iss => (iss.month === mockMonths[j] && iss.year === y)).length;
+                let perMonthNofIssue2 = this.objArray2.filter(iss => (iss.month === mockMonths[j] && iss.year === y)).length;
+                console.log("perMonthNofIssue: ", perMonthNofIssue, " perMonthNofIssue2: ", perMonthNofIssue2, " savePos: ", savePos, " mockMonth: ",  mockMonths[j] + " " + y);
                 this.seriesData.count[savePos] = perMonthNofIssue;
                 this.seriesData.monthAndYear[savePos] = mockMonths[j] + " " + y;
+                this.seriesData.count2[savePos] = perMonthNofIssue2;
                 savePos += 1;
             }
         }
@@ -305,15 +298,19 @@ export class AppComponent implements OnInit {
     }
 
     public minMaxArray: number[] = [];
+
     public createMinMaxArray(): void {
-        for (let i = 0; i < this.objArray.length; i++) {
-            this.minMaxArray[i] = this.objArray[i].year;
-        }
+        this.projectArray.forEach(item => {
+            item.closedFilteredIssue.forEach(FilteredIssues => {
+                this.minMaxArray.push(FilteredIssues.updated_at.getUTCFullYear());
+            })
+            item.timeOutIssue.forEach(Issues => {
+                this.minMaxArray.push(Issues.updated_at.getUTCFullYear());
+            })
+        })
     }
 
-    // Function to calculate the Time Estimated for each Issue
-    // & which one is Active or Closed
-    calcData(): void {
+    calcTime(): void {
         this.projectArray.forEach(project => {
             project.pjIssues.forEach(issue => {
                 project.totalTimeEstimated += issue.time_estimate;
@@ -321,29 +318,33 @@ export class AppComponent implements OnInit {
             });
 
             this.timeSpent(project);
-            project.pjIssues.forEach(issue => {
-
-                if (typeof this.endDate === "undefined") {
-                    console.log("EndDate undefined");
-                    this.endDate = new Date();
-                    this.endDate.setHours(23, 59, 59, 59);
-                }
-
-                if (typeof this.startDate === "undefined") {
-                    console.log("StartDate undefined");
-                    this.startDate = new Date(1970, 0);
-                }
-
-                if (issue.created_at.getTime() >= this.startDate.getTime() && issue.created_at.getTime() <= this.endDate.getTime()) {
-                    project.nCreated += 1;
-                }
-
-                if ((issue.state === "closed") && (issue.updated_at.getTime() >= this.startDate.getTime()) && (issue.updated_at.getTime() <= this.endDate.getTime())) {
-                    project.nClosed += 1;
-                    project.closedFilteredIssue.push(issue);
-                }
-            });
         })
+
+    }
+
+    calcData(project: Project): void {
+
+        project.pjIssues.forEach(issue => {
+            if (typeof this.endDate === "undefined") {
+                console.log("EndDate undefined");
+                this.endDate = new Date();
+                this.endDate.setHours(23, 59, 59, 59);
+            }
+
+            if (typeof this.startDate === "undefined") {
+                console.log("StartDate undefined");
+                this.startDate = new Date(1970, 0);
+            }
+
+            if (issue.created_at.getTime() >= this.startDate.getTime() && issue.created_at.getTime() <= this.endDate.getTime()) {
+                project.nCreated += 1;
+            }
+
+            if ((issue.state === "closed") && (issue.updated_at.getTime() >= this.startDate.getTime()) && (issue.updated_at.getTime() <= this.endDate.getTime())) {
+                project.nClosed += 1;
+                project.closedFilteredIssue.push(issue);
+            }
+        });
 
     }
 
@@ -351,33 +352,37 @@ export class AppComponent implements OnInit {
     // Title pretty self explanatory
     // This function will calculate the whether an Issue is out
     // of the Time Estimated range
-
+    public objArray: MockTableData[] = [];
+    public objArray2: MockTableData[] = [];
     checkIssueOutOfTime(): void {
         this.projectArray.forEach(project => {
+            project.closedFilteredIssue.forEach(FilteredIssue => {
+                this.handleGraphs(FilteredIssue, this.objArray2);
+            });
             project.closedFilteredIssue.forEach(issue => {
                 if (issue.time_estimate < ((issue.total_time_spent * 0.9) - 3600)) {
-                    this.handleGraphs(issue);
+                    this.handleGraphs(issue, this.objArray);
                     issue.html_link = this.baseUrl + this.dropDownValue + "/" +
                         project.name + "/issues/" + issue.iid + "?private_token=ij7kczXd7fGz2dyJxT5Y";
                     project.timeOut += 1;
                     project.timeOutIssue.push(issue);
                 }
             });
-        })
+        });
 
     }
 
-    public objArray: MockTableData[] = [];
 
-    public handleGraphs(issue: Issue): void {
+
+    public handleGraphs(issue: Issue, array: MockTableData[]): void {
         let locale = "en-us";
         let obj: MockTableData = new MockTableData;
 
-        obj.year = issue.created_at.getUTCFullYear();
-        obj.month = issue.created_at.toLocaleString(locale, { month: "long" });
+        obj.year = issue.updated_at.getUTCFullYear();
+        obj.month = issue.updated_at.toLocaleString(locale, { month: "long" });
         obj.iid = issue.iid;
         console.log("Obj.year: ", obj.year);
-        this.objArray.push(obj);
+        array.push(obj);
     }
 
     newWindow(htmlLink: string): void {
