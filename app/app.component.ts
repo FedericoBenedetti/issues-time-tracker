@@ -239,13 +239,13 @@ export class AppComponent implements OnInit {
 
     public spliceArray(): void {
         let indexOfFirstGreaterThanZero = this.seriesData.count.findIndex(x => { return x > 0 });
-        let indexOfFirstGreaterThanZero2 = this.seriesData.count2.findIndex(x => { return x > 0 });
+        let indexOfFirstGreaterThanZero2 = this.seriesData.closed.findIndex(x => { return x > 0 });
 
         let min = Math.min(indexOfFirstGreaterThanZero, indexOfFirstGreaterThanZero2);
 
         this.seriesData.count.splice(0, min);
         this.seriesData.monthAndYear.splice(0, min);
-        this.seriesData.count2.splice(0, min);
+        this.seriesData.closed.splice(0, min);
 
         let indexOfLastGreaterThanZero = 0;
         let indexOfLastGreaterThanZero2 = 0;
@@ -256,8 +256,8 @@ export class AppComponent implements OnInit {
             }
         }
 
-        for (let i = 0; i < this.seriesData.count2.length; i++) {
-            if (this.seriesData.count2[i] > 0) {
+        for (let i = 0; i < this.seriesData.closed.length; i++) {
+            if (this.seriesData.closed[i] > 0) {
                 indexOfLastGreaterThanZero2 = i;
             }
         }
@@ -266,7 +266,8 @@ export class AppComponent implements OnInit {
 
         this.seriesData.count.splice(max + 1);
         this.seriesData.monthAndYear.splice(max + 1);
-        this.seriesData.count2.splice(max + 1);
+        this.seriesData.closed.splice(max + 1);
+         this.seriesData.percentage.splice(max + 1);
     }
 
 
@@ -289,7 +290,11 @@ export class AppComponent implements OnInit {
                 console.log("perMonthNofIssue: ", perMonthNofIssue, " perMonthNofIssue2: ", perMonthNofIssue2, " savePos: ", savePos, " mockMonth: ",  mockMonths[j] + " " + y);
                 this.seriesData.count[savePos] = perMonthNofIssue;
                 this.seriesData.monthAndYear[savePos] = mockMonths[j] + " " + y;
-                this.seriesData.count2[savePos] = perMonthNofIssue2;
+                this.seriesData.closed[savePos] = perMonthNofIssue2;
+                if (perMonthNofIssue2)
+                 this.seriesData.percentage[savePos] = perMonthNofIssue/perMonthNofIssue2 *100;
+                 else
+                 this.seriesData.percentage[savePos] =0;
                 savePos += 1;
             }
         }

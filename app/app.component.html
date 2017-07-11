@@ -125,11 +125,10 @@
         <kendo-chart-series>
             <kendo-chart-series-item [data]="seriesData?.count" type="line" name="Issues Out Of Time">
             </kendo-chart-series-item>
-            <kendo-chart-series-item [data]="seriesData?.count2" type="line" name="Issues Closed">
+            <kendo-chart-series-item [data]="seriesData?.closed" type="line" name="Issues Closed">
+            </kendo-chart-series-item>
+               <kendo-chart-series-item [data]="seriesData?.percentage" type="line" name="Percentage">
             </kendo-chart-series-item>
         </kendo-chart-series>
-        <kendo-grid-pdf fileName="Products.pdf" [allPages]="true">
-            <kendo-grid-pdf-margin top="1cm" left="1cm" right="1cm" bottom="1cm"></kendo-grid-pdf-margin>
-        </kendo-grid-pdf>
     </kendo-chart>
 </div>
