@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewEncapsulation } from "@angular/core";
 import { HttpModule } from "@angular/http";
 
 import { SortDescriptor, orderBy } from "@progress/kendo-data-query";
@@ -21,7 +21,8 @@ import { HttpService } from "./http.service";
 @Component({
     selector: "my-app",
     templateUrl: "./app/app.component.html",
-    styleUrls: ["./app/app.component.css"],
+    encapsulation: ViewEncapsulation.None,
+    styleUrls: ["./app/app.component.css", "./app/pdf-styles.css"],
 
     providers: [
         HttpService
