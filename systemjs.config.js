@@ -56,8 +56,8 @@
                 defaultExtension: 'js'
             },
             'angular2-busy': {
-            main: './index.js',
-            defaultExtension: 'js'
+                main: './index.js',
+                defaultExtension: 'js'
             }
         }
     });

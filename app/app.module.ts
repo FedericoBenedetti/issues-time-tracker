@@ -4,7 +4,7 @@ import { BrowserModule, } from "@angular/platform-browser";
 import { HttpModule } from "@angular/http";
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { GridModule, PDFModule  } from "@progress/kendo-angular-grid";
+import { GridModule, PDFModule } from "@progress/kendo-angular-grid";
 import { DialogModule } from '@progress/kendo-angular-dialog';
 import { ButtonsModule } from '@progress/kendo-angular-buttons';
 import { ChartsModule } from '@progress/kendo-angular-charts';

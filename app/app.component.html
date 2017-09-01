@@ -117,8 +117,8 @@
 <div class="body-graph" *ngIf="!toggle">
     <kendo-chart>
         <ng-template kendoGridToolbarTemplate>
-                <button kendoGridPDFCommand><span class='k-icon k-i-file-pdf'></span>Export to PDF</button>
-            </ng-template>
+            <button kendoGridPDFCommand><span class='k-icon k-i-file-pdf'></span>Export to PDF</button>
+        </ng-template>
         <kendo-chart-category-axis>
             <kendo-chart-category-axis-item-labels rotation="35">
             </kendo-chart-category-axis-item-labels>
@@ -130,7 +130,7 @@
             </kendo-chart-series-item>
             <kendo-chart-series-item [data]="seriesData?.closed" type="line" name="Issues Closed">
             </kendo-chart-series-item>
-               <kendo-chart-series-item [data]="seriesData?.percentage" type="line" name="Percentage">
+            <kendo-chart-series-item [data]="seriesData?.percentage" type="line" name="Percentage">
             </kendo-chart-series-item>
         </kendo-chart-series>
     </kendo-chart>

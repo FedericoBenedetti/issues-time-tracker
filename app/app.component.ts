@@ -268,7 +268,7 @@ export class AppComponent implements OnInit {
         this.seriesData.count.splice(max + 1);
         this.seriesData.monthAndYear.splice(max + 1);
         this.seriesData.closed.splice(max + 1);
-         this.seriesData.percentage.splice(max + 1);
+        this.seriesData.percentage.splice(max + 1);
     }
 
 
@@ -288,14 +288,14 @@ export class AppComponent implements OnInit {
             for (let j = 0; j < mockMonths.length; j++) {
                 let perMonthNofIssue = this.objArray.filter(iss => (iss.month === mockMonths[j] && iss.year === y)).length;
                 let perMonthNofIssue2 = this.objArray2.filter(iss => (iss.month === mockMonths[j] && iss.year === y)).length;
-                console.log("perMonthNofIssue: ", perMonthNofIssue, " perMonthNofIssue2: ", perMonthNofIssue2, " savePos: ", savePos, " mockMonth: ",  mockMonths[j] + " " + y);
+                console.log("perMonthNofIssue: ", perMonthNofIssue, " perMonthNofIssue2: ", perMonthNofIssue2, " savePos: ", savePos, " mockMonth: ", mockMonths[j] + " " + y);
                 this.seriesData.count[savePos] = perMonthNofIssue;
                 this.seriesData.monthAndYear[savePos] = mockMonths[j] + " " + y;
                 this.seriesData.closed[savePos] = perMonthNofIssue2;
                 if (perMonthNofIssue2)
-                 this.seriesData.percentage[savePos] = perMonthNofIssue/perMonthNofIssue2 *100;
-                 else
-                 this.seriesData.percentage[savePos] =0;
+                    this.seriesData.percentage[savePos] = perMonthNofIssue / perMonthNofIssue2 * 100;
+                else
+                    this.seriesData.percentage[savePos] = 0;
                 savePos += 1;
             }
         }
